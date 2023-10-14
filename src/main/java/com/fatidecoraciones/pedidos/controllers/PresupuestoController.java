@@ -39,7 +39,7 @@ public class PresupuestoController {
     @GetMapping("/lista/{id}")
     public ResponseEntity <PresupuestoDto> uno (@PathVariable("id") Long id) {
 
-        if (presupuestoService.findById(id) == null){
+        if (!presupuestoService.existById(id)){
             return new ResponseEntity("El CLIENTE no existe",HttpStatus.BAD_REQUEST);  }
 
         PresupuestoDto uno = presupuestoService.getPresupuestoDto(id);
@@ -74,7 +74,7 @@ public class PresupuestoController {
 
 
 
-        Cliente cliente = clienteService.getOne(id).get();
+        Cliente cliente = clienteService.getCliente(id);
 
         if (
                         nuevo.getSistema() == Sistema.DUBAI ||
@@ -147,7 +147,7 @@ public class PresupuestoController {
 
 
 
-        Presupuesto presupuesto = presupuestoService.getOne(id).get();
+        Presupuesto presupuesto = presupuestoService.getPresupuesto(id);
 
         presupuesto.setSistema(editar.getSistema());
         presupuesto.setAncho(editar.getAncho());
@@ -164,9 +164,9 @@ public class PresupuestoController {
     }
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
-        if (presupuestoService.findById(id) == null)
+        if (!presupuestoService.existById(id))
             return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
-        presupuestoService.delete(id);
+        presupuestoRepository.deleteById(id);
         return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
     }
 

@@ -36,9 +36,9 @@ public class PedidoController {
     @Autowired
     private PedidoRepository pedidoRepository;
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
     @Autowired
-    ClienteService clienteService;
+    private ClienteService clienteService;
 
     @GetMapping("/lista")
     public ResponseEntity<List<PedidoDto>> lista() {
@@ -48,7 +48,7 @@ public class PedidoController {
     @GetMapping("/lista/{id}")
     public ResponseEntity <PedidoDto> uno (@PathVariable("id") Long id) {
 
-        if (pedidoService.findById(id) == null){
+        if (pedidoService.getPedido(id) == null){
             return new ResponseEntity("El PEDIDO no existe",HttpStatus.BAD_REQUEST);  }
 
         PedidoDto uno = pedidoService.getPedidoDto(id);
@@ -84,7 +84,7 @@ public class PedidoController {
         if (StringUtils.isBlank(nuevo.getResponsable()))
             return new ResponseEntity<> ("Falta el RESPONSABLE del pedido", HttpStatus.BAD_REQUEST);
 
-        Cliente cliente = clienteService.getOne(id).get();
+        Cliente cliente = clienteService.getCliente(id);
 
 
         Pedido pedido = new Pedido(
@@ -112,14 +112,14 @@ public class PedidoController {
 
         if (llego.getLlego().equals("true") || llego.getLlego().equals("false"))
         if (llego.getLlego().equals("true")){
-            Pedido pedido = pedidoService.getOne(id).get();
+            Pedido pedido = pedidoService.getPedido(id);
             pedido.setLlego(true);
             pedido.setFecha_llegada(LocalDate.now());
             pedido.setEstado(Estado.LLEGO);
             pedidoRepository.save(pedido);
             return new ResponseEntity<>("El Pedido LLEGO", HttpStatus.OK);
         }else {
-            Pedido pedido = pedidoService.getOne(id).get();
+            Pedido pedido = pedidoService.getPedido(id);
             pedido.setLlego(false);
             pedido.setFecha_llegada(null);
             pedido.setEstado(Estado.PEDIDO);
@@ -151,7 +151,7 @@ public class PedidoController {
         if (StringUtils.isBlank(editar.getResponsable()))
             return new ResponseEntity<> ("Falta el RESPONSABLE del pedido", HttpStatus.BAD_REQUEST);
 
-        Pedido pedido = pedidoService.getOne(id).get();
+        Pedido pedido = pedidoService.getPedido(id);
 
 
         pedido.setFecha_pedido(editar.getFecha_pedido());
@@ -284,9 +284,9 @@ public class PedidoController {
     }
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
-        if (pedidoService.findById(id) == null)
+        if (!pedidoService.existById(id))
             return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
-        pedidoService.delete(id);
+        pedidoRepository.deleteById(id);
         return new ResponseEntity<>("PEDIDO borrado", HttpStatus.OK);
     }
 

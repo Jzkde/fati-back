@@ -3,6 +3,8 @@ package com.fatidecoraciones.pedidos.controllers;
 import com.fatidecoraciones.pedidos.dtos.ClienteDto;
 import com.fatidecoraciones.pedidos.models.Cliente;
 import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
+import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
+import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
 import com.fatidecoraciones.pedidos.services.ClienteService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,10 @@ public class ClienteController {
     @Autowired
     ClienteRepository clienteRepository;
     @Autowired
+    PedidoRepository pedidoRepository;
+    @Autowired
+    PresupuestoRepository presupuestoRepository;
+    @Autowired
     ClienteService clienteService;
 
     @GetMapping("/lista")
@@ -30,7 +36,7 @@ public class ClienteController {
     @GetMapping("/lista/{id}")
     public ResponseEntity <ClienteDto> uno (@PathVariable("id") Long id) {
 
-            if (clienteService.findById(id) == null){
+            if (clienteService.getCliente(id) == null){
         return new ResponseEntity("El CLIENTE no existe",HttpStatus.BAD_REQUEST);  }
 
         ClienteDto uno = clienteService.getClienteDto(id);
@@ -70,7 +76,7 @@ public class ClienteController {
         if (StringUtils.isBlank(editar.getDireccion()))
             return new ResponseEntity<>("Falta la DIRECCION", HttpStatus.BAD_REQUEST);
 
-        Cliente cliente = clienteService.getOne(id).get();
+        Cliente cliente = clienteService.getCliente(id);
 
         cliente.setApellido(editar.getApellido());
         cliente.setDireccion(editar.getDireccion());
@@ -82,10 +88,18 @@ public class ClienteController {
     }
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
-    if (clienteService.findById(id) == null)
+    if (!clienteService.existById(id))
         return new ResponseEntity<>("No existe el CLIENTE", HttpStatus.NOT_FOUND);
-    clienteService.delete(id);
-        return new ResponseEntity<>("CLIENTE borrado", HttpStatus.OK);
+    if (!clienteRepository.findById(id).get().getPedidos().isEmpty())
+        return new ResponseEntity<>("El CLIENTE aun tiene pedidos registrados", HttpStatus.BAD_REQUEST);
+    if (!clienteRepository.findById(id).get().getPresupuestos().isEmpty())
+            return new ResponseEntity<>("El CLIENTE aun tiene presupuestos registrados", HttpStatus.BAD_REQUEST);
+        clienteRepository.deleteById(id);
+            return new ResponseEntity<>("CLIENTE borrado", HttpStatus.OK);
+
+
+
+
     }
 
 }

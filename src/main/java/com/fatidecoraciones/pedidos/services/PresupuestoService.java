@@ -19,26 +19,13 @@ public class PresupuestoService {
     public boolean existById (Long id) {
         return presupuestoRepository.existsById(id);
     }
-    public Optional<Presupuesto> getOne (Long id){
-        return presupuestoRepository.findById(id);
-    }
-
-    public void save (Presupuesto presupuesto){
-        presupuestoRepository.save(presupuesto);
-    }
-
+    public Presupuesto getPresupuesto (Long id){  return presupuestoRepository.findById(id).orElse(null);    }
+    public void save (Presupuesto presupuesto){  presupuestoRepository.save(presupuesto);    }
     public List<PresupuestoDto> getPresupuestoDto() {
         return presupuestoRepository.findAll().stream().map(presupuesto -> new PresupuestoDto(presupuesto)).collect(Collectors.toList());
     }
-    public List<Presupuesto> getPresupuestos() {
-        return presupuestoRepository.findAll();
-    }
-    public PresupuestoDto getPresupuestoDto(Long id) {
-        return new PresupuestoDto(this.findById(id));
-    }
-    public Presupuesto findById(Long id) {
-        return presupuestoRepository.findById(id).orElse(null);
-    }
+    public List<Presupuesto> getPresupuestos() {     return presupuestoRepository.findAll();    }
+    public PresupuestoDto getPresupuestoDto(Long id) {        return new PresupuestoDto(this.getPresupuesto(id));    }
     public void delete (Long id){presupuestoRepository.deleteById(id);}
 
 }

@@ -19,26 +19,18 @@ public class ClienteService {
     public boolean existById (Long id) {
         return clienteRepository.existsById(id);
     }
-    public Optional<Cliente> getOne (Long id){
-        return clienteRepository.findById(id);
-    }
+    public Cliente getCliente(Long id) { return clienteRepository.findById(id).orElse(null); }
     public void save (Cliente cliente){
         clienteRepository.save(cliente);
     }
-
     public List<ClienteDto> getClientesDto() {
         return clienteRepository.findAll().stream().map(cliente -> new ClienteDto(cliente)).collect(Collectors.toList());
     }
-    public List<Cliente> getPedidos() {
+    public List<Cliente> getClientes() {
         return clienteRepository.findAll();
     }
-
-
     public ClienteDto getClienteDto(Long id) {
-        return new ClienteDto(this.findById(id));
-    }
-    public Cliente findById(Long id) {
-        return clienteRepository.findById(id).orElse(null);
+        return new ClienteDto(this.getCliente(id));
     }
     public void delete (Long id){clienteRepository.deleteById(id);}
 

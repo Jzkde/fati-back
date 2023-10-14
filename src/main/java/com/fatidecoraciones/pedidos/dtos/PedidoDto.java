@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter @Setter
 public class PedidoDto {
 
-
+    private  Long id;
     private LocalDate fecha_pedido;
     private String provedor;
     private String via;
@@ -30,6 +30,7 @@ public class PedidoDto {
     }
 
     public PedidoDto(Pedido pedido) {
+        this.id = pedido.getId();
         this.fecha_pedido = pedido.getFecha_pedido();
         this.provedor = pedido.getProvedor();
         this.via = pedido.getVia();

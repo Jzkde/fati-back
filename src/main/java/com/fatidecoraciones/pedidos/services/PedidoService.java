@@ -27,32 +27,24 @@ public class PedidoService extends QueryService<Pedido> {
     public boolean existById (Long id) {
         return pedidoRepository.existsById(id);
     }
-    public Optional<Pedido> getOne (Long id){
-        return pedidoRepository.findById(id);
+    public Pedido getPedido (Long id){
+        return pedidoRepository.findById(id).orElse(null);
         }
-
     public void save (Pedido pedido){
     pedidoRepository.save(pedido);
     }
-
     public List<PedidoDto> getPedidosDto() {
         return pedidoRepository.findAll().stream().map(pedido -> new PedidoDto(pedido)).collect(Collectors.toList());
     }
-
     public List<Pedido> getPedidos() {
         return pedidoRepository.findAll();
     }
-
-
     public PedidoDto getPedidoDto(Long id) {
-        return new PedidoDto(this.findById(id));
-    }
-    public Pedido findById(Long id) {
-        return pedidoRepository.findById(id).orElse(null);
+        return new PedidoDto(this.getPedido(id));
     }
     public void delete (Long id){pedidoRepository.deleteById(id);}
 
-    public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
+        public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
         final Specification<Pedido> specification = createSpecification(pedidoCriteria);
         List<Pedido> pedidos = pedidoRepository.findAll(specification);
         return pedidos;
