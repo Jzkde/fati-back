@@ -4,9 +4,6 @@ import com.fatidecoraciones.pedidos.enums.Estado;
 import lombok.Data;
 import tech.jhipster.service.filter.*;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.time.LocalDate;
 @Data
 public class PedidoCriteria {
     public static class EstadoFilter extends Filter<Estado> {}

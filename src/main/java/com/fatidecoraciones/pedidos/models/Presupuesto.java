@@ -28,6 +28,7 @@ public class Presupuesto {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="cliente_id")
     private Cliente cliente;
+    private String clienteNombre;
 
     public Presupuesto() {
     }

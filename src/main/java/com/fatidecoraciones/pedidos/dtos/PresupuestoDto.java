@@ -21,6 +21,7 @@ public class PresupuestoDto {
     private String accesorios;
     private String ambiente;
     private String observaciones;
+    private String clienteNombre;
 
     public PresupuestoDto() {
     }
@@ -35,5 +36,6 @@ public class PresupuestoDto {
         this.accesorios = presupuesto.getAccesorios();
         this.ambiente = presupuesto.getAmbiente();
         this.observaciones = presupuesto.getObservaciones();
+        this.clienteNombre = presupuesto.getClienteNombre();
     }
 }

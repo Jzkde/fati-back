@@ -49,7 +49,7 @@ public class PedidoController {
     public ResponseEntity <PedidoDto> uno (@PathVariable("id") Long id) {
 
         if (pedidoService.getPedido(id) == null){
-            return new ResponseEntity("El PEDIDO no existe",HttpStatus.BAD_REQUEST);  }
+            return new ResponseEntity("El PEDIDO no existe o fue BORRADO",HttpStatus.BAD_REQUEST);  }
 
         PedidoDto uno = pedidoService.getPedidoDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);

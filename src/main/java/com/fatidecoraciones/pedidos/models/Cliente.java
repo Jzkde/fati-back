@@ -40,6 +40,7 @@ public class Cliente {
     public void addPresupuesto(Presupuesto presupuesto) {
         presupuesto.setCliente(this);
         presupuestos.add(presupuesto);
+        presupuesto.setClienteNombre(this.nombre + " " + this.apellido);
     }
 
 }
