@@ -2,6 +2,7 @@ package com.fatidecoraciones.pedidos.controllers;
 
 
 import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
+import com.fatidecoraciones.pedidos.criteria.PresupuestoCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.ClienteDto;
 import com.fatidecoraciones.pedidos.dtos.LlegoDto;
@@ -9,6 +10,7 @@ import com.fatidecoraciones.pedidos.dtos.PedidoDto;
 import com.fatidecoraciones.pedidos.enums.Estado;
 import com.fatidecoraciones.pedidos.models.Cliente;
 import com.fatidecoraciones.pedidos.models.Pedido;
+import com.fatidecoraciones.pedidos.models.Presupuesto;
 import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
 import com.fatidecoraciones.pedidos.services.ClienteService;
@@ -54,11 +56,14 @@ public class PedidoController {
         PedidoDto uno = pedidoService.getPedidoDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
     }
-
-
-
-
-
+    @GetMapping("/filtro/{id}")
+    public ResponseEntity<List<Pedido>> filtroUno (@PathVariable("id") Long id) {
+        BusquedaDto busquedaDto = new BusquedaDto();
+        busquedaDto.setClienteNombre(clienteService.getCliente(id).getNombre()+" "+clienteService.getCliente(id).getApellido());
+        PedidoCriteria pedidoCriteria = createCriteria(busquedaDto);
+        List<Pedido> list = pedidoService.findByCriteria(pedidoCriteria);
+        return new ResponseEntity<List<Pedido>>(list, HttpStatus.OK);
+    }
     @PostMapping("/filtro")
     public ResponseEntity<List<Pedido>> filtro (@RequestBody BusquedaDto busquedaDto){
         PedidoCriteria pedidoCriteria = createCriteria(busquedaDto);
@@ -179,9 +184,13 @@ public class PedidoController {
         return new ResponseEntity<> ( HttpStatus.OK);
     }
 
-
-
-
+    @DeleteMapping("/borrar/{id}")
+    public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
+        if (!pedidoService.existById(id))
+            return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
+        pedidoRepository.deleteById(id);
+        return new ResponseEntity<>("PEDIDO borrado", HttpStatus.OK);
+    }
 
     private PedidoCriteria createCriteria (BusquedaDto busqueda){
         PedidoCriteria pedidoCriteria = new PedidoCriteria();
@@ -281,13 +290,6 @@ public class PedidoController {
             }
         }
         return pedidoCriteria;
-    }
-    @DeleteMapping("/borrar/{id}")
-    public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
-        if (!pedidoService.existById(id))
-            return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
-        pedidoRepository.deleteById(id);
-        return new ResponseEntity<>("PEDIDO borrado", HttpStatus.OK);
     }
 
 }

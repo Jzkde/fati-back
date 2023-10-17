@@ -1,5 +1,6 @@
 package com.fatidecoraciones.pedidos.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
 import com.fatidecoraciones.pedidos.enums.Sistema;
@@ -25,6 +26,7 @@ public class Presupuesto {
     private String accesorios;
     private String ambiente;
     private String observaciones;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="cliente_id")
     private Cliente cliente;

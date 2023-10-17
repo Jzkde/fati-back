@@ -44,7 +44,7 @@ public class PedidoService extends QueryService<Pedido> {
     }
     public void delete (Long id){pedidoRepository.deleteById(id);}
 
-        public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
+    public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
         final Specification<Pedido> specification = createSpecification(pedidoCriteria);
         List<Pedido> pedidos = pedidoRepository.findAll(specification);
         return pedidos;

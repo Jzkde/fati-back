@@ -1,19 +1,28 @@
 package com.fatidecoraciones.pedidos.controllers;
 
+import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
+import com.fatidecoraciones.pedidos.criteria.PresupuestoCriteria;
+import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.PresupuestoDto;
 import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
+import com.fatidecoraciones.pedidos.enums.Estado;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Cliente;
+import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
 import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
 import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
 import com.fatidecoraciones.pedidos.services.ClienteService;
 import com.fatidecoraciones.pedidos.services.PresupuestoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.service.filter.BooleanFilter;
+import tech.jhipster.service.filter.LocalDateFilter;
+import tech.jhipster.service.filter.StringFilter;
 
 import java.util.List;
 
@@ -44,6 +53,22 @@ public class PresupuestoController {
 
         PresupuestoDto uno = presupuestoService.getPresupuestoDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
+    }
+
+    @GetMapping("/filtro/{id}")
+    public ResponseEntity<List<Presupuesto>> filtroUno (@PathVariable("id") Long id) {
+        BusquedaDto busquedaDto = new BusquedaDto();
+        busquedaDto.setClienteNombre(clienteService.getCliente(id).getNombre()+" "+clienteService.getCliente(id).getApellido());
+        PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
+        List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
+        return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
+    }
+
+    @PostMapping("/filtro")
+    public ResponseEntity<List<Presupuesto>> filtro (@RequestBody BusquedaDto busquedaDto){
+        PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
+        List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
+        return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
     }
     @PostMapping("/nuevo/{id}")
     public ResponseEntity <?> nuevo (@PathVariable ("id") Long id,
@@ -168,6 +193,20 @@ public class PresupuestoController {
             return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
         presupuestoRepository.deleteById(id);
         return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
+    }
+
+    private PresupuestoCriteria createCriteria (BusquedaDto busqueda){
+        PresupuestoCriteria presupuestoCriteria = new PresupuestoCriteria();
+        if (busqueda != null){
+
+            //Cliente
+            if (!StringUtils.isBlank(busqueda.getClienteNombre())){
+                StringFilter filter = new StringFilter();
+                filter.setContains(busqueda.getClienteNombre());
+                presupuestoCriteria.setClienteNombre(filter);
+            }
+        }
+        return presupuestoCriteria;
     }
 
 }
