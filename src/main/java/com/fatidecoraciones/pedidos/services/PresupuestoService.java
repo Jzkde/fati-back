@@ -1,10 +1,7 @@
 package com.fatidecoraciones.pedidos.services;
 
-import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
 import com.fatidecoraciones.pedidos.criteria.PresupuestoCriteria;
 import com.fatidecoraciones.pedidos.dtos.PresupuestoDto;
-import com.fatidecoraciones.pedidos.models.Pedido;
-import com.fatidecoraciones.pedidos.models.Pedido_;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
 import com.fatidecoraciones.pedidos.models.Presupuesto_;
 import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
@@ -20,7 +17,7 @@ import java.util.stream.Collectors;
 public class PresupuestoService extends QueryService<Presupuesto> {
 
     @Autowired
-    private PresupuestoRepository presupuestoRepository;
+    PresupuestoRepository presupuestoRepository;
 
     public boolean existById(Long id) {
         return presupuestoRepository.existsById(id);

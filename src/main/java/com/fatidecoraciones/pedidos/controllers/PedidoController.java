@@ -15,16 +15,17 @@ import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
 import com.fatidecoraciones.pedidos.services.ClienteService;
 import com.fatidecoraciones.pedidos.services.PedidoService;
+import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.LocalDateFilter;
 import tech.jhipster.service.filter.StringFilter;
 
 import javax.swing.plaf.basic.BasicDesktopIconUI;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -290,6 +291,26 @@ public class PedidoController {
             }
         }
         return pedidoCriteria;
+    }
+
+    @GetMapping("/export-pdf")
+    public ResponseEntity<byte[]> exportPdf() throws JRException, FileNotFoundException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("petsReport", "petsReport.pdf");
+        return ResponseEntity.ok().headers(headers).body(pedidoService.exportPdf());
+    }
+
+    @GetMapping("/export-xls")
+    public ResponseEntity<byte[]> exportXls() throws JRException, FileNotFoundException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8");
+        var contentDisposition = ContentDisposition.builder("attachment")
+                .filename("petsReport" + ".xls").build();
+        headers.setContentDisposition(contentDisposition);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pedidoService.exportXls());
     }
 
 }

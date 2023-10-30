@@ -1,28 +1,28 @@
 package com.fatidecoraciones.pedidos.services;
 
 import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
-import com.fatidecoraciones.pedidos.dtos.ClienteDto;
 import com.fatidecoraciones.pedidos.dtos.PedidoDto;
-import com.fatidecoraciones.pedidos.models.Cliente;
 import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Pedido_;
+import com.fatidecoraciones.pedidos.reportes.ReporteEspecial;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
-
-import javax.persistence.criteria.JoinType;
+import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PedidoService extends QueryService<Pedido> {
 
     @Autowired
-    private  PedidoRepository pedidoRepository;
+    PedidoRepository pedidoRepository;
+    @Autowired
+    ReporteEspecial reporteEspecial;
 
     public boolean existById (Long id) {
         return pedidoRepository.existsById(id);
@@ -46,9 +46,17 @@ public class PedidoService extends QueryService<Pedido> {
 
     public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
         final Specification<Pedido> specification = createSpecification(pedidoCriteria);
-        List<Pedido> pedidos = pedidoRepository.findAll(specification);
-        return pedidos;
+        return pedidoRepository.findAll(specification);
     }
+    public byte[] exportPdf() throws JRException, FileNotFoundException {
+        return reporteEspecial.exportToPdf(pedidoRepository.findAll());
+    }
+
+    public byte[] exportXls() throws JRException, FileNotFoundException {
+        return reporteEspecial.exportToXls(pedidoRepository.findAll());
+    }
+
+
     private Specification<Pedido> createSpecification(PedidoCriteria pedidoCriteria) {
         Specification<Pedido> specification = Specification.where(null);
         if (pedidoCriteria != null) {
@@ -85,14 +93,6 @@ public class PedidoService extends QueryService<Pedido> {
             if (pedidoCriteria.getResponsable() != null) {
                 specification = specification.and(buildStringSpecification(pedidoCriteria.getResponsable(), Pedido_.responsable));
             }
-
-//            if (pedidoCriteria.getClienteNombre() != null) {
-//                specification = specification.and(buildReferringEntitySpecification(pedidoCriteria.getClienteNormbre(), Pedido_.cliente, Cliente_.apellido));
-//            }
-//            if (pedidoCriteria.getClienteNombre() != null) {
-//                specification = specification.and(buildSpecification(pedidoCriteria.getClienteNombre(), root -> root.join(Pedido_.cliente, JoinType.LEFT).get(Cliente_.nombre)));
-//            }
-
         }
         return specification;
     }
