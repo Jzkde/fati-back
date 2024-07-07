@@ -1,15 +1,12 @@
 package com.fatidecoraciones.pedidos.controllers;
 
-import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
 import com.fatidecoraciones.pedidos.criteria.PresupuestoCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.PresupuestoDto;
 import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
-import com.fatidecoraciones.pedidos.enums.Estado;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Cliente;
-import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
 import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
 import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
@@ -20,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.jhipster.service.filter.BooleanFilter;
-import tech.jhipster.service.filter.LocalDateFilter;
 import tech.jhipster.service.filter.StringFilter;
 
 import java.util.List;
@@ -32,91 +27,93 @@ import java.util.List;
 public class PresupuestoController {
 
     @Autowired
-    PresupuestoRepository presupuestoRepository;
+    private PresupuestoRepository presupuestoRepository;
     @Autowired
-    PresupuestoService presupuestoService;
+    private PresupuestoService presupuestoService;
     @Autowired
-    ClienteService clienteService;
+    private ClienteService clienteService;
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
 
     @GetMapping("/lista")
     public ResponseEntity<List<PresupuestoDto>> lista() {
         List<PresupuestoDto> list = presupuestoService.getPresupuestoDto();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-    @GetMapping("/lista/{id}")
-    public ResponseEntity <PresupuestoDto> uno (@PathVariable("id") Long id) {
 
-        if (!presupuestoService.existById(id)){
-            return new ResponseEntity("El CLIENTE no existe",HttpStatus.BAD_REQUEST);  }
+    @GetMapping("/lista/{id}")
+    public ResponseEntity<PresupuestoDto> uno(@PathVariable("id") Long id) {
+
+        if (!presupuestoService.existById(id)) {
+            return new ResponseEntity("El CLIENTE no existe", HttpStatus.BAD_REQUEST);
+        }
 
         PresupuestoDto uno = presupuestoService.getPresupuestoDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
     }
 
     @GetMapping("/filtro/{id}")
-    public ResponseEntity<List<Presupuesto>> filtroUno (@PathVariable("id") Long id) {
+    public ResponseEntity<List<Presupuesto>> filtroUno(@PathVariable("id") Long id) {
         BusquedaDto busquedaDto = new BusquedaDto();
-        busquedaDto.setClienteNombre(clienteService.getCliente(id).getNombre()+" "+clienteService.getCliente(id).getApellido());
+        busquedaDto.setClienteNombre(clienteService.getCliente(id).getNombre() + " " + clienteService.getCliente(id).getApellido());
         PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
         List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
         return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
     }
 
     @PostMapping("/filtro")
-    public ResponseEntity<List<Presupuesto>> filtro (@RequestBody BusquedaDto busquedaDto){
+    public ResponseEntity<List<Presupuesto>> filtro(@RequestBody BusquedaDto busquedaDto) {
         PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
         List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
         return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
     }
+
     @PostMapping("/nuevo/{id}")
-    public ResponseEntity <?> nuevo (@PathVariable ("id") Long id,
-                                     @RequestBody PresupuestoDto nuevo){
+    public ResponseEntity<?> nuevo(@PathVariable("id") Long id,
+                                   @RequestBody PresupuestoDto nuevo) {
 
         if (nuevo.getSistema() == null)
-            return new ResponseEntity<> ("Falta el tipo de SISTEMA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el tipo de SISTEMA", HttpStatus.BAD_REQUEST);
         if (nuevo.getAlto() == 0)
-            return new ResponseEntity<> ("Falta el ALTO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el ALTO", HttpStatus.BAD_REQUEST);
         if (nuevo.getAncho() == 0)
-            return new ResponseEntity<> ("Falta el ANCHO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el ANCHO", HttpStatus.BAD_REQUEST);
         if (nuevo.getComando() == null)
-            return new ResponseEntity<> ("Falta el lado del COMANDO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el lado del COMANDO", HttpStatus.BAD_REQUEST);
         if (nuevo.getApertura() == null)
-            return new ResponseEntity<> ("Falta el tipo de APERTURA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el tipo de APERTURA", HttpStatus.BAD_REQUEST);
         if (
                 (nuevo.getSistema() == Sistema.DUBAI ||
-                        nuevo.getSistema() == Sistema.PERCIANA  ||
+                        nuevo.getSistema() == Sistema.PERCIANA ||
                         nuevo.getSistema() == Sistema.ROLLER ||
                         nuevo.getSistema() == Sistema.ORIENTAL) && nuevo.getApertura() != Apertura.NO_POSEE)
 
-            return new ResponseEntity<> ("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
         if (
                 (nuevo.getSistema() == Sistema.AMERICANA ||
-                        nuevo.getSistema() == Sistema.PRESILLA ) && nuevo.getComando() != Comando.NO_POSEE)
+                        nuevo.getSistema() == Sistema.PRESILLA) && nuevo.getComando() != Comando.NO_POSEE)
 
-            return new ResponseEntity<> ("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
 
 
         Cliente cliente = clienteService.getCliente(id);
 
         if (
-                        nuevo.getSistema() == Sistema.DUBAI ||
-                        nuevo.getSistema() == Sistema.PERCIANA  ||
+                nuevo.getSistema() == Sistema.DUBAI ||
+                        nuevo.getSistema() == Sistema.PERCIANA ||
                         nuevo.getSistema() == Sistema.ROLLER ||
-                        nuevo.getSistema() == Sistema.ORIENTAL){
+                        nuevo.getSistema() == Sistema.ORIENTAL) {
 
-        Presupuesto presupuesto = new Presupuesto(
-                nuevo.getSistema(),
-                nuevo.getAncho(),
-                nuevo.getAlto(),
-                nuevo.getComando(),
-                Apertura.NO_POSEE,
-                nuevo.getAccesorios(),
-                nuevo.getAmbiente(),
-                nuevo.getObservaciones()
-        );
+            Presupuesto presupuesto = new Presupuesto(
+                    nuevo.getSistema(),
+                    nuevo.getAncho(),
+                    nuevo.getAlto(),
+                    nuevo.getComando(),
+                    Apertura.NO_POSEE,
+                    nuevo.getAccesorios(),
+                    nuevo.getAmbiente(),
+                    nuevo.getObservaciones()
+            );
 
             cliente.addPresupuesto(presupuesto);
             clienteRepository.save(cliente);
@@ -124,7 +121,7 @@ public class PresupuestoController {
         }
         if (
                 nuevo.getSistema() == Sistema.AMERICANA ||
-                        nuevo.getSistema() == Sistema.PRESILLA){
+                        nuevo.getSistema() == Sistema.PRESILLA) {
 
             Presupuesto presupuesto = new Presupuesto(
                     nuevo.getSistema(),
@@ -141,35 +138,35 @@ public class PresupuestoController {
             clienteRepository.save(cliente);
             presupuestoRepository.save(presupuesto);
         }
-        return new ResponseEntity<> ( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PutMapping("/editar/{id}")
-    public ResponseEntity <?> editar (@PathVariable ("id") Long id,@RequestBody PresupuestoDto editar){
+    public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody PresupuestoDto editar) {
 
         if (editar.getSistema() == null)
-            return new ResponseEntity<> ("Falta el tipo de SISTEMA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el tipo de SISTEMA", HttpStatus.BAD_REQUEST);
         if (editar.getAlto() == 0)
-            return new ResponseEntity<> ("Falta el ALTO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el ALTO", HttpStatus.BAD_REQUEST);
         if (editar.getAncho() == 0)
-            return new ResponseEntity<> ("Falta el ANCHO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el ANCHO", HttpStatus.BAD_REQUEST);
         if (editar.getComando() == null)
-            return new ResponseEntity<> ("Falta el lado del COMANDO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el lado del COMANDO", HttpStatus.BAD_REQUEST);
         if (editar.getApertura() == null)
-            return new ResponseEntity<> ("Falta el tipo de APERTURA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Falta el tipo de APERTURA", HttpStatus.BAD_REQUEST);
 
         if (
                 (editar.getSistema() == Sistema.DUBAI ||
-                        editar.getSistema() == Sistema.PERCIANA  ||
+                        editar.getSistema() == Sistema.PERCIANA ||
                         editar.getSistema() == Sistema.ROLLER ||
                         editar.getSistema() == Sistema.ORIENTAL) && editar.getApertura() != Apertura.NO_POSEE)
 
-            return new ResponseEntity<> ("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
         if (
                 (editar.getSistema() == Sistema.AMERICANA ||
-                        editar.getSistema() == Sistema.PRESILLA ) && editar.getComando() != Comando.NO_POSEE)
+                        editar.getSistema() == Sistema.PRESILLA) && editar.getComando() != Comando.NO_POSEE)
 
-            return new ResponseEntity<> ("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity<>("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
 
 
         Presupuesto presupuesto = presupuestoService.getPresupuesto(id);
@@ -185,22 +182,23 @@ public class PresupuestoController {
 
 
         presupuestoRepository.save(presupuesto);
-        return new ResponseEntity<> (HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @DeleteMapping("/borrar/{id}")
-    public ResponseEntity <?> borrar (@PathVariable ("id") Long id) {
+    public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
         if (!presupuestoService.existById(id))
             return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
         presupuestoRepository.deleteById(id);
         return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
     }
 
-    private PresupuestoCriteria createCriteria (BusquedaDto busqueda){
+    private PresupuestoCriteria createCriteria(BusquedaDto busqueda) {
         PresupuestoCriteria presupuestoCriteria = new PresupuestoCriteria();
-        if (busqueda != null){
+        if (busqueda != null) {
 
             //Cliente
-            if (!StringUtils.isBlank(busqueda.getClienteNombre())){
+            if (!StringUtils.isBlank(busqueda.getClienteNombre())) {
                 StringFilter filter = new StringFilter();
                 filter.setContains(busqueda.getClienteNombre());
                 presupuestoCriteria.setClienteNombre(filter);

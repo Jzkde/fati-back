@@ -13,25 +13,35 @@ import java.util.stream.Collectors;
 public class ClienteService {
 
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
 
-    public boolean existById (Long id) {
+    public boolean existById(Long id) {
         return clienteRepository.existsById(id);
     }
-    public Cliente getCliente(Long id) { return clienteRepository.findById(id).orElse(null); }
-    public void save (Cliente cliente){
+
+    public Cliente getCliente(Long id) {
+        return clienteRepository.findById(id).orElse(null);
+    }
+
+    public void save(Cliente cliente) {
         clienteRepository.save(cliente);
     }
+
     public List<ClienteDto> getClientesDto() {
         return clienteRepository.findAll().stream().map(cliente -> new ClienteDto(cliente)).collect(Collectors.toList());
     }
+
     public List<Cliente> getClientes() {
         return clienteRepository.findAll();
     }
+
     public ClienteDto getClienteDto(Long id) {
         return new ClienteDto(this.getCliente(id));
     }
-    public void delete (Long id){clienteRepository.deleteById(id);}
+
+    public void delete(Long id) {
+        clienteRepository.deleteById(id);
+    }
 
 
 }

@@ -20,13 +20,13 @@ import java.util.List;
 public class ClienteController {
 
     @Autowired
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
     @Autowired
-    PedidoRepository pedidoRepository;
+    private PedidoRepository pedidoRepository;
     @Autowired
-    PresupuestoRepository presupuestoRepository;
+    private PresupuestoRepository presupuestoRepository;
     @Autowired
-    ClienteService clienteService;
+    private ClienteService clienteService;
 
     @GetMapping("/lista")
     public ResponseEntity<List<ClienteDto>> lista() {

@@ -6,13 +6,11 @@ import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Pedido_;
 import com.fatidecoraciones.pedidos.reportes.ReporteEspecial;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,46 +18,57 @@ import java.util.stream.Collectors;
 public class PedidoService extends QueryService<Pedido> {
 
     @Autowired
-    PedidoRepository pedidoRepository;
+    private PedidoRepository pedidoRepository;
     @Autowired
-    ReporteEspecial reporteEspecial;
+    private ReporteEspecial reporteEspecial;
 
-    public boolean existById (Long id) {
+    public boolean existById(Long id) {
         return pedidoRepository.existsById(id);
     }
-    public Pedido getPedido (Long id){
+
+    public Pedido getPedido(Long id) {
         return pedidoRepository.findById(id).orElse(null);
-        }
-    public void save (Pedido pedido){
-    pedidoRepository.save(pedido);
     }
+
+    public void save(Pedido pedido) {
+        pedidoRepository.save(pedido);
+    }
+
     public List<PedidoDto> getPedidosDto() {
         return pedidoRepository.findAll().stream().map(pedido -> new PedidoDto(pedido)).collect(Collectors.toList());
     }
+
     public List<Pedido> getPedidos() {
         return pedidoRepository.findAll();
     }
+
     public PedidoDto getPedidoDto(Long id) {
         return new PedidoDto(this.getPedido(id));
     }
-    public void delete (Long id){pedidoRepository.deleteById(id);}
+
+    public void delete(Long id) {
+        pedidoRepository.deleteById(id);
+    }
 
     public List<Pedido> findByCriteria(PedidoCriteria pedidoCriteria) {
         final Specification<Pedido> specification = createSpecification(pedidoCriteria);
         return pedidoRepository.findAll(specification);
     }
-    public byte[] exportPdf() throws JRException, FileNotFoundException {
-        return reporteEspecial.exportToPdf(pedidoRepository.findAll());
-    }
-
-    public byte[] exportXls() throws JRException, FileNotFoundException {
-        return reporteEspecial.exportToXls(pedidoRepository.findAll());
-    }
+//    public byte[] exportPdf() throws JRException, FileNotFoundException {
+//        return reporteEspecial.exportToPdf(pedidoRepository.findAll());
+//    }
+//
+//    public byte[] exportXls() throws JRException, FileNotFoundException {
+//        return reporteEspecial.exportToXls(pedidoRepository.findAll());
+//    }
 
 
     private Specification<Pedido> createSpecification(PedidoCriteria pedidoCriteria) {
         Specification<Pedido> specification = Specification.where(null);
         if (pedidoCriteria != null) {
+            if (pedidoCriteria.getId() != null) {
+                specification = specification.and(buildRangeSpecification(pedidoCriteria.getId(), Pedido_.id));
+            }
             if (pedidoCriteria.getFecha_pedido() != null) {
                 specification = specification.and(buildRangeSpecification(pedidoCriteria.getFecha_pedido(), Pedido_.fecha_pedido));
             }

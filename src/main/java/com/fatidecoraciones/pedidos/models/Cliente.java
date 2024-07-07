@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Cliente {
 
     @Id
@@ -32,11 +33,13 @@ public class Cliente {
         this.direccion = direccion;
         this.telefono = telefono;
     }
+
     public void addPedidos(Pedido pedido) {
         pedido.setCliente(this);
         pedidos.add(pedido);
         pedido.setClienteNombre(this.nombre + " " + this.apellido);
     }
+
     public void addPresupuesto(Presupuesto presupuesto) {
         presupuesto.setCliente(this);
         presupuestos.add(presupuesto);

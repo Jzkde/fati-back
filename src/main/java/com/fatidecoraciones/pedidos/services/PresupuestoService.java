@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class PresupuestoService extends QueryService<Presupuesto> {
 
     @Autowired
-    PresupuestoRepository presupuestoRepository;
+    private PresupuestoRepository presupuestoRepository;
 
     public boolean existById(Long id) {
         return presupuestoRepository.existsById(id);
