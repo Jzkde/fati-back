@@ -16,12 +16,12 @@ public class Flex {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String tela;
-    private Double precio;
+    private double precio;
 
     public Flex() {
     }
 
-    public Flex (String tela, Double precio) {
+    public Flex (String tela, double precio) {
 
         this.tela = tela;
         this.precio = precio;

@@ -4,7 +4,6 @@ import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.Flex_;
-import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;

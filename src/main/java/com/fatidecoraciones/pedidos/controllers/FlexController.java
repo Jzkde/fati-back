@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("flex")
 @CrossOrigin
-public class FlexControler {
+public class FlexController {
     @Autowired
     private FlexService flexService;
 
