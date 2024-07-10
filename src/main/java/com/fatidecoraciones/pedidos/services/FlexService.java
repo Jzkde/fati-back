@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,11 +53,13 @@ public class FlexService extends QueryService<Flex> {
         flexRepository.actualizarPrecios(factorIncremento);
     }
 
+    public Flex findByTela(String tela) {
+        return flexRepository.findByTela(tela);
+    }
 
     public List<Flex> findByCriteria(FlexCriteria flexCriteria) {
         final Specification<Flex> specification = createSpecification(flexCriteria);
-        List<Flex> flexs = flexRepository.findAll(specification);
-        return flexs;
+        return flexRepository.findAll(specification);
     }
 
     private Specification<Flex> createSpecification(FlexCriteria flexCriteria) {

@@ -4,8 +4,10 @@ import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Cliente;
+import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
+import com.fatidecoraciones.pedidos.repositories.FlexRepository;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
 import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
 import com.fatidecoraciones.pedidos.services.ClienteService;
@@ -26,9 +28,34 @@ public class PedidosApplication extends SpringBootServletInitializer {
 	@Bean
 	public CommandLineRunner initData (PedidoRepository pedidoService,
 									   ClienteService clienteService,
-									   PresupuestoRepository presupuestoRepository
+									   PresupuestoRepository presupuestoRepository,
+									   FlexRepository flexService
 	){
 		return (args -> {
+
+			Flex flex1 = new Flex(
+					"SISTEMA VTX15 - 32MM",
+					46290.0
+
+			);
+
+			Flex flex2 = new Flex(
+					"SISTEMA VTX15 -38MM",
+					50570.0
+
+			);
+
+			Flex flex3 = new Flex(
+					"SISTEMA VTX20 -45MM",
+					55740.0
+
+			);
+
+			Flex flex4 = new Flex(
+					"BLACKOUT VINILICO (Ancho 1.83 mts)",
+					48310.0
+
+			);
 
 			Cliente cliente1 = new Cliente(
 					"Jose",
@@ -244,7 +271,10 @@ public class PedidosApplication extends SpringBootServletInitializer {
 			presupuestoRepository.save(presupuesto5);
 			presupuestoRepository.save(presupuesto6);
 
-
+			flexService.save(flex1);
+			flexService.save(flex2);
+			flexService.save(flex3);
+			flexService.save(flex4);
 		});
 
 	}
