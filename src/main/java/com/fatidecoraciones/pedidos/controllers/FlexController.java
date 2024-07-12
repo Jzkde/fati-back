@@ -3,6 +3,7 @@ package com.fatidecoraciones.pedidos.controllers;
 import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
+import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.services.FlexService;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +23,41 @@ public class FlexController {
     @Autowired
     private FlexService flexService;
 
-    @GetMapping("/lista")
+    @GetMapping("/lista/total")
     public ResponseEntity<List<FlexDto>> lista() {
         List<FlexDto> list = flexService.getFlexsDto();
         if (list.isEmpty())
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/lista/sistemas")
+    public ResponseEntity<?> lista(@RequestParam String sistema) {
+        Sistema sistemaEnum;
+        try {
+            sistemaEnum = Sistema.valueOf(sistema.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
+        }
+
+        List<FlexDto> list = flexService.getSistemas(sistemaEnum);
+        if (list.isEmpty())
+            return new ResponseEntity<>("No hay SISTEMAS cargados", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/lista/telas")
+    public ResponseEntity<?> telas(@RequestParam String tela) {
+        Sistema telasEnum;
+        try {
+            telasEnum = Sistema.valueOf(tela.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Tela no válida", HttpStatus.BAD_REQUEST);
+        }
+
+        List<FlexDto> list = flexService.getTelas(telasEnum);
+        if (list.isEmpty())
+            return new ResponseEntity<>("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -41,7 +72,7 @@ public class FlexController {
     }
 
     @GetMapping("/cotizar")
-    public ResponseEntity<?> getFlexByTela(@RequestParam String telaN, int alto, int ancho) {
+    public ResponseEntity<?> getFlexByTela(@RequestParam String telaN, int alto, int ancho, Sistema sistema) {
         if (flexService.findByTela(telaN) == null)
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
 
@@ -53,18 +84,32 @@ public class FlexController {
         double precioSist;
         double precioTela;
 
-        if (ancho > 59 && ancho <= 160) {
-            sist = VTX32.getPrecio();
-        } else if (ancho > 160 && ancho <= 250) {
-            sist = VTX38.getPrecio();
-        } else if (ancho > 250 && ancho <= 400) {
-            sist = VTX45.getPrecio();
-        } else
-            return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
+        switch (sistema) {
+            case ROLLER:
+                if (ancho > 59 && ancho <= 160) {
+                    sist = VTX32.getPrecio();
+                } else if (ancho > 160 && ancho <= 250) {
+                    sist = VTX38.getPrecio();
+                } else if (ancho > 250 && ancho <= 400) {
+                    sist = VTX45.getPrecio();
+                } else {
+                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
+                }
+                break;
+            case VERTICALES:
+            case PERCIANA:
+            case DUBAI:
+            case ROMANA:
+                sist = flexService.getSistemas(sistema).get(0).getPrecio();
+                break;
+            default:
+                return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
+        }
+
 
         Flex tela = flexService.findByTela(telaN);
 
-        int mtTela = ancho * alto / 10000;
+        double mtTela = ancho * alto / 10000.0;
         if (mtTela > 1) {
             precioTela = tela.getPrecio() * mtTela;
         } else {
@@ -72,7 +117,7 @@ public class FlexController {
         }
 
         if (ancho < 100) {
-            precioSist = sist ;
+            precioSist = sist;
         } else {
             precioSist = sist * ancho / 100;
         }
@@ -108,7 +153,9 @@ public class FlexController {
         Flex flex = new Flex(
 
                 nuevo.getTela(),
-                nuevo.getPrecio()
+                nuevo.getPrecio(),
+                nuevo.isEsTela(),
+                nuevo.getSistema()
         );
         flexService.save(flex);
         return new ResponseEntity<>(HttpStatus.OK);

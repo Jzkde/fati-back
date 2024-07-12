@@ -4,8 +4,8 @@ public enum Sistema {
     ROLLER,
     VERTICALES,
     PERCIANA,
-    AMERICANA,
-    PRESILLA,
+    TELA,
     DUBAI,
-    ORIENTAL
+    ORIENTAL,
+    ROMANA
 }

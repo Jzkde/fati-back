@@ -2,6 +2,7 @@ package com.fatidecoraciones.pedidos.services;
 
 import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
+import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.Flex_;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +33,7 @@ public class FlexService extends QueryService<Flex> {
     }
 
     public List<FlexDto> getFlexsDto() {
-        return flexRepository.findAll().stream().map(flex -> new FlexDto(flex)).collect(Collectors.toList());
+        return flexRepository.findAll().stream().map(FlexDto::new).collect(Collectors.toList());
     }
 
     public List<Flex> getFlexs() {
@@ -57,6 +57,22 @@ public class FlexService extends QueryService<Flex> {
         return flexRepository.findByTela(tela);
     }
 
+    public List<FlexDto> getSistemas(Sistema sistema) {
+        List<Flex> flexList = flexRepository.findAll();
+        return flexList.stream()
+                .filter(flex -> !flex.isEsTela() && flex.getSistema() == sistema)
+                .map(FlexDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<FlexDto> getTelas(Sistema sistema) {
+        List<Flex> flexList = flexRepository.findAll();
+        return flexList.stream()
+                .filter(flex -> flex.isEsTela() && flex.getSistema() == sistema)
+                .map(FlexDto::new)
+                .collect(Collectors.toList());
+    }
+
     public List<Flex> findByCriteria(FlexCriteria flexCriteria) {
         final Specification<Flex> specification = createSpecification(flexCriteria);
         return flexRepository.findAll(specification);
@@ -71,6 +87,4 @@ public class FlexService extends QueryService<Flex> {
         }
         return specification;
     }
-
-
 }

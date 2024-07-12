@@ -58,14 +58,14 @@ public class PresupuestoController {
         busquedaDto.setClienteNombre(clienteService.getCliente(id).getNombre() + " " + clienteService.getCliente(id).getApellido());
         PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
         List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
-        return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/filtro")
     public ResponseEntity<List<Presupuesto>> filtro(@RequestBody BusquedaDto busquedaDto) {
         PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
         List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
-        return new ResponseEntity<List<Presupuesto>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/nuevo/{id}")
@@ -90,8 +90,7 @@ public class PresupuestoController {
 
             return new ResponseEntity<>("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
         if (
-                (nuevo.getSistema() == Sistema.AMERICANA ||
-                        nuevo.getSistema() == Sistema.PRESILLA) && nuevo.getComando() != Comando.NO_POSEE)
+               nuevo.getSistema() == Sistema.TELA && nuevo.getComando() != Comando.NO_POSEE)
 
             return new ResponseEntity<>("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
 
@@ -120,8 +119,7 @@ public class PresupuestoController {
             presupuestoRepository.save(presupuesto);
         }
         if (
-                nuevo.getSistema() == Sistema.AMERICANA ||
-                        nuevo.getSistema() == Sistema.PRESILLA) {
+                nuevo.getSistema() == Sistema.TELA) {
 
             Presupuesto presupuesto = new Presupuesto(
                     nuevo.getSistema(),
@@ -163,8 +161,7 @@ public class PresupuestoController {
 
             return new ResponseEntity<>("Este SISTEMA NO tiene APERTURA", HttpStatus.BAD_REQUEST);
         if (
-                (editar.getSistema() == Sistema.AMERICANA ||
-                        editar.getSistema() == Sistema.PRESILLA) && editar.getComando() != Comando.NO_POSEE)
+                editar.getSistema() == Sistema.TELA && editar.getComando() != Comando.NO_POSEE)
 
             return new ResponseEntity<>("Este SISTEMA NO tiene COMANDO", HttpStatus.BAD_REQUEST);
 

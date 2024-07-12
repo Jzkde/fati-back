@@ -1,5 +1,6 @@
 package com.fatidecoraciones.pedidos.services;
 
+import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
 import com.opencsv.CSVReader;
@@ -13,28 +14,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class DBService {
 
+    private static final String SCRIPT_PATH = "123.bat";
     @Autowired
     FlexRepository flexRepository;
-
     @Value("${spring.datasource.url}")
     private String dbUrl;
-
     @Value("${spring.datasource.username}")
     private String dbUser;
-
     @Value("${spring.datasource.password}")
     private String dbPassword;
-
-    private static final String SCRIPT_PATH =   "123.bat";
 
     public void backupDatabase() throws IOException, InterruptedException {
         File scriptFile = new File(SCRIPT_PATH);
@@ -67,14 +61,24 @@ public class DBService {
         try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             List<String[]> datos = reader.readAll();
             for (String[] fila : datos) {
-                if (fila.length >= 2) { // Asegúrate de que haya al menos dos columnas
+                if (fila.length >= 4) { // columnas necesarias
                     Flex producto = new Flex();
                     producto.setTela(fila[0]);
+                    // Carga precio
                     try {
                         producto.setPrecio(Double.parseDouble(fila[1]));
                     } catch (NumberFormatException e) {
                         System.err.println("Error al parsear el precio: " + fila[1]);
-                        continue; // Salta esta fila si el precio no es válido
+                        continue;
+                    }
+                    // Carga si es "tela" o no
+                    producto.setEsTela(Boolean.parseBoolean(fila[2]));
+                    // Carga el sistema
+                    try {
+                        producto.setSistema(Sistema.valueOf(fila[3].toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error al parsear el sistema: " + fila[3]);
+                        continue;
                     }
                     productos.add(producto);
                 } else {
