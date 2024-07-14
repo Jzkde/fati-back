@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,7 @@ public class FlexService extends QueryService<Flex> {
         List<Flex> flexList = flexRepository.findAll();
         return flexList.stream()
                 .filter(flex -> !flex.isEsTela() && flex.getSistema() == sistema)
+                .sorted(Comparator.comparing(Flex::getTela))
                 .map(FlexDto::new)
                 .collect(Collectors.toList());
     }
@@ -69,6 +71,7 @@ public class FlexService extends QueryService<Flex> {
         List<Flex> flexList = flexRepository.findAll();
         return flexList.stream()
                 .filter(flex -> flex.isEsTela() && flex.getSistema() == sistema)
+                .sorted(Comparator.comparing(Flex::getTela))
                 .map(FlexDto::new)
                 .collect(Collectors.toList());
     }

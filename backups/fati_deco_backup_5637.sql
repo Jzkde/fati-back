@@ -137,7 +137,7 @@ CREATE TABLE `presupuesto` (
 
 LOCK TABLES `presupuesto` WRITE;
 /*!40000 ALTER TABLE `presupuesto` DISABLE KEYS */;
-INSERT INTO `presupuesto` VALUES (1,'',100,'',120,'NO_POSEE','Jose Quiroga','DERECHO','','PERCIANA',1),(2,'',210,'',180,'BILATERAL','Ernesto Mamani','NO_POSEE','','PRESILLA',2),(3,'',130,'',120,'CENTRAL','Maria Melano','IZQUIERDO','','VERTICALES',3),(4,'',130,'',120,'CENTRAL','Maria Melano','NO_POSEE','','AMERICANA',3),(5,'',115,'',100,'NO_POSEE','Ines Jure','DERECHO','','DUBAI',4);
+INSERT INTO `presupuesto` VALUES (1,'',100,'',120,'NO_POSEE','Jose Quiroga','DERECHO','','PERSIANA',1),(2,'',210,'',180,'BILATERAL','Ernesto Mamani','NO_POSEE','','PRESILLA',2),(3,'',130,'',120,'CENTRAL','Maria Melano','IZQUIERDO','','VERTICALES',3),(4,'',130,'',120,'CENTRAL','Maria Melano','NO_POSEE','','AMERICANA',3),(5,'',115,'',100,'NO_POSEE','Ines Jure','DERECHO','','DUBAI',4);
 /*!40000 ALTER TABLE `presupuesto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

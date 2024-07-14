@@ -84,7 +84,7 @@ public class PresupuestoController {
             return new ResponseEntity<>("Falta el tipo de APERTURA", HttpStatus.BAD_REQUEST);
         if (
                 (nuevo.getSistema() == Sistema.DUBAI ||
-                        nuevo.getSistema() == Sistema.PERCIANA ||
+                        nuevo.getSistema() == Sistema.PERSIANA ||
                         nuevo.getSistema() == Sistema.ROLLER ||
                         nuevo.getSistema() == Sistema.ORIENTAL) && nuevo.getApertura() != Apertura.NO_POSEE)
 
@@ -99,7 +99,7 @@ public class PresupuestoController {
 
         if (
                 nuevo.getSistema() == Sistema.DUBAI ||
-                        nuevo.getSistema() == Sistema.PERCIANA ||
+                        nuevo.getSistema() == Sistema.PERSIANA ||
                         nuevo.getSistema() == Sistema.ROLLER ||
                         nuevo.getSistema() == Sistema.ORIENTAL) {
 
@@ -155,7 +155,7 @@ public class PresupuestoController {
 
         if (
                 (editar.getSistema() == Sistema.DUBAI ||
-                        editar.getSistema() == Sistema.PERCIANA ||
+                        editar.getSistema() == Sistema.PERSIANA ||
                         editar.getSistema() == Sistema.ROLLER ||
                         editar.getSistema() == Sistema.ORIENTAL) && editar.getApertura() != Apertura.NO_POSEE)
 

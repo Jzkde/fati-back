@@ -47,10 +47,10 @@ public class FlexController {
     }
 
     @GetMapping("/lista/telas")
-    public ResponseEntity<?> telas(@RequestParam String tela) {
+    public ResponseEntity<?> telas(@RequestParam String sistema) {
         Sistema telasEnum;
         try {
-            telasEnum = Sistema.valueOf(tela.toUpperCase());
+            telasEnum = Sistema.valueOf(sistema.toUpperCase());
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>("Tela no válida", HttpStatus.BAD_REQUEST);
         }
@@ -72,7 +72,16 @@ public class FlexController {
     }
 
     @GetMapping("/cotizar")
-    public ResponseEntity<?> getFlexByTela(@RequestParam String telaN, int alto, int ancho, Sistema sistema) {
+    public ResponseEntity<?> getFlexByTela(@RequestParam String telaN, int alto, int ancho, String sistema) {
+
+        Sistema sistemaEmun;
+        try {
+            sistemaEmun = Sistema.valueOf(sistema.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
+        }
+
+
         if (flexService.findByTela(telaN) == null)
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
 
@@ -80,52 +89,80 @@ public class FlexController {
         Flex VTX38 = flexService.findByTela("SISTEMA VTX15 -38MM");
         Flex VTX45 = flexService.findByTela("SISTEMA VTX20 -45MM");
 
+        Flex tela = flexService.findByTela(telaN);
+
         double sist;
         double precioSist;
         double precioTela;
 
-        switch (sistema) {
+        double mtTela = ancho * alto / 10000.0;
+
+        switch (sistemaEmun) {
             case ROLLER:
-                if (ancho > 59 && ancho <= 160) {
-                    sist = VTX32.getPrecio();
+                if (ancho > 59 && ancho < 100) {
+                    sist = VTX32.getPrecio()*100;
+                } else if (ancho >= 100 && ancho <= 160) {
+                    sist = VTX32.getPrecio() * ancho;
                 } else if (ancho > 160 && ancho <= 250) {
-                    sist = VTX38.getPrecio();
+                    sist = VTX38.getPrecio() * ancho;
                 } else if (ancho > 250 && ancho <= 400) {
-                    sist = VTX45.getPrecio();
+                    sist = VTX45.getPrecio() * ancho;
                 } else {
                     return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
                 }
+
+                if (mtTela > 1) {
+                    precioTela = tela.getPrecio() * mtTela;
+                } else {
+                    precioTela = tela.getPrecio();
+                }
+
                 break;
             case VERTICALES:
-            case PERCIANA:
+                if (ancho > 59 && ancho < 150) {
+                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio()*150;
+                } else if (ancho >= 150 && ancho <= 400) {
+                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio() * ancho;
+                } else {
+                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
+                }
+
+                if (mtTela > 1.5) {
+                    precioTela = tela.getPrecio() * mtTela;
+                } else {
+                    precioTela = tela.getPrecio()*1.5;
+                }
+                break;
+            case PERSIANA:
             case DUBAI:
             case ROMANA:
-                sist = flexService.getSistemas(sistema).get(0).getPrecio();
+                if (ancho > 59 && ancho < 100) {
+                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio()*100;
+                } else if (ancho >= 100 && ancho <= 400) {
+                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio() * ancho;
+                } else {
+                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
+                }
+
+                if (mtTela > 1) {
+                    precioTela = tela.getPrecio() * mtTela;
+                } else {
+                    precioTela = tela.getPrecio();
+                }
                 break;
             default:
                 return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
         }
 
 
-        Flex tela = flexService.findByTela(telaN);
+        precioSist = sist  / 100;
 
-        double mtTela = ancho * alto / 10000.0;
-        if (mtTela > 1) {
-            precioTela = tela.getPrecio() * mtTela;
-        } else {
-            precioTela = tela.getPrecio();
-        }
-
-        if (ancho < 100) {
-            precioSist = sist;
-        } else {
-            precioSist = sist * ancho / 100;
-        }
         Double total = precioTela + precioSist;
 
         System.out.println("Precio sistema: " + precioSist);
         System.out.println("Ancho: " + ancho);
         System.out.println("Alto: " + alto);
+        System.out.println("Tela: " + tela.getTela() + " $" + tela.getPrecio());
         System.out.println("Precio tela: " + precioTela);
         System.out.println("Total: " + total);
         System.out.println("-------------------------");
@@ -185,7 +222,7 @@ public class FlexController {
         if (list.isEmpty())
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.BAD_REQUEST);
         flexService.incrementarPrecios(porcentaje);
-        return new ResponseEntity<>("Modificacion MASIVA exitosa", HttpStatus.OK);
+        return new ResponseEntity<>("Modificación MASIVA exitosa", HttpStatus.OK);
     }
 
     @DeleteMapping("/borrar/{id}")
