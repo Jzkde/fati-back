@@ -33,6 +33,10 @@ public class RoyalCortService extends QueryService<RoyalCort> {
         royalCortRepository.save(royalCort);
     }
 
+    public RoyalCort saveVarios(RoyalCort royalCort) {
+        return royalCortRepository.save(royalCort);
+    }
+
     public List<RoyalCortDto> getRCsDto() {
         return royalCortRepository.findAll().stream().map(RoyalCortDto::new).collect(Collectors.toList());
     }

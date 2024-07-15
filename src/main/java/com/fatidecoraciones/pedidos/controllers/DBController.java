@@ -35,7 +35,7 @@ public class DBController {
             return "Error al cargar los datos: " + e.getMessage();
         }
     }
-    @PostMapping("/carga/rc")
+    @PostMapping("/carga/royal")
     public String cargarRC(@RequestParam("file") MultipartFile file) {
         try {
             dbService.cargarDatosRC(file);

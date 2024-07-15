@@ -5,6 +5,7 @@ import com.fatidecoraciones.pedidos.dtos.FlexDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.Flex_;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -33,6 +34,9 @@ public class FlexService extends QueryService<Flex> {
         flexRepository.save(flex);
     }
 
+    public Flex saveVarios(Flex flex) {
+        return flexRepository.save(flex);
+    }
     public List<FlexDto> getFlexsDto() {
         return flexRepository.findAll().stream().map(FlexDto::new).collect(Collectors.toList());
     }

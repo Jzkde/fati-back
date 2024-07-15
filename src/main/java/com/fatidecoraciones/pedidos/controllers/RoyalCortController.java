@@ -15,6 +15,7 @@ import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("royal")
@@ -189,6 +190,15 @@ public class RoyalCortController {
         );
         royalCortService.save(royalCort);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/varios")
+    @Transactional
+    public ResponseEntity<List<RoyalCort>> saveDataEntries(@RequestBody List<RoyalCort> dataEntries) {
+        List<RoyalCort> telasRoyal = dataEntries.stream()
+                .map(royalCortService::saveVarios)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(telasRoyal);
     }
 
     @PutMapping("/editar/{id}")

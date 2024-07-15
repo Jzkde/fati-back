@@ -5,6 +5,7 @@ import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.services.FlexService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("flex")
@@ -196,6 +198,15 @@ public class FlexController {
         );
         flexService.save(flex);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/varios")
+    @Transactional
+    public ResponseEntity<List<Flex>> saveDataEntries(@RequestBody List<Flex> dataEntries) {
+        List<Flex> telasFlex = dataEntries.stream()
+                .map(flexService::saveVarios)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(telasFlex);
     }
 
     @PutMapping("/editar/{id}")
