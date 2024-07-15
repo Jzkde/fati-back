@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-public class Flex {
+public class RoyalCort {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,10 +19,10 @@ public class Flex {
     @Enumerated(EnumType.STRING)
     private Sistema sistema;
 
-    public Flex() {
+    public RoyalCort() {
     }
 
-    public Flex(String tela, double precio, boolean esTela, Sistema sistema) {
+    public RoyalCort(String tela, double precio, boolean esTela, Sistema sistema) {
         this.tela = tela;
         this.precio = precio;
         this.esTela = esTela;

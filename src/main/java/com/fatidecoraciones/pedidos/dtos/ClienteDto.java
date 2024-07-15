@@ -3,8 +3,6 @@ package com.fatidecoraciones.pedidos.dtos;
 import com.fatidecoraciones.pedidos.models.Cliente;
 import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
-import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

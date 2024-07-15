@@ -7,5 +7,6 @@ public enum Sistema {
     TELA,
     DUBAI,
     ORIENTAL,
-    ROMANA
+    ROMANA,
+    ZEBRA
 }

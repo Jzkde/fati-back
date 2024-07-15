@@ -1,11 +1,11 @@
 package com.fatidecoraciones.pedidos.controllers;
 
-import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
+import com.fatidecoraciones.pedidos.criteria.RoyalCortCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
-import com.fatidecoraciones.pedidos.dtos.FlexDto;
+import com.fatidecoraciones.pedidos.dtos.RoyalCortDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
-import com.fatidecoraciones.pedidos.models.Flex;
-import com.fatidecoraciones.pedidos.services.FlexService;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
+import com.fatidecoraciones.pedidos.services.RoyalCortService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,15 +17,17 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
-@RequestMapping("flex")
+@RequestMapping("royal")
 @CrossOrigin
-public class FlexController {
+public class RoyalCortController {
+
+
     @Autowired
-    private FlexService flexService;
+    private RoyalCortService royalCortService;
 
     @GetMapping("/lista/total")
-    public ResponseEntity<List<FlexDto>> lista() {
-        List<FlexDto> list = flexService.getFlexsDto();
+    public ResponseEntity<List<RoyalCortDto>> lista() {
+        List<RoyalCortDto> list = royalCortService.getRCsDto();
         if (list.isEmpty())
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list, HttpStatus.OK);
@@ -40,7 +42,7 @@ public class FlexController {
             return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
         }
 
-        List<FlexDto> list = flexService.getSistemas(sistemaEnum);
+        List<RoyalCortDto> list = royalCortService.getSistemas(sistemaEnum);
         if (list.isEmpty())
             return new ResponseEntity<>("No hay SISTEMAS cargados", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list, HttpStatus.OK);
@@ -55,24 +57,24 @@ public class FlexController {
             return new ResponseEntity<>("Tela no válida", HttpStatus.BAD_REQUEST);
         }
 
-        List<FlexDto> list = flexService.getTelas(telasEnum);
+        List<RoyalCortDto> list = royalCortService.getTelas(telasEnum);
         if (list.isEmpty())
             return new ResponseEntity<>("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/lista/{id}")
-    public ResponseEntity<FlexDto> uno(@PathVariable("id") Long id) {
+    public ResponseEntity<RoyalCortDto> uno(@PathVariable("id") Long id) {
 
-        if (flexService.getFlex(id) == null) {
+        if (royalCortService.getRC(id) == null) {
             return new ResponseEntity("La TELA no existe o fue BORRADA", HttpStatus.NOT_FOUND);
         }
-        FlexDto uno = flexService.getFlexDto(id);
+        RoyalCortDto uno = royalCortService.getRCDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
     }
 
     @GetMapping("/cotizar")
-    public ResponseEntity<?> getFlexByTela(@RequestParam String telaN, int alto, int ancho, String sistema) {
+    public ResponseEntity<?> getRotalCortByTela(@RequestParam String telaN, int alto, int ancho, String sistema) {
 
         Sistema sistemaEmun;
         try {
@@ -81,15 +83,14 @@ public class FlexController {
             return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
         }
 
-
-        if (flexService.findByTela(telaN) == null)
+        if (royalCortService.findByTela(telaN) == null)
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
 
-        Flex VTX32 = flexService.findByTela("SISTEMA VTX15 - 32MM");
-        Flex VTX38 = flexService.findByTela("SISTEMA VTX15 -38MM");
-        Flex VTX45 = flexService.findByTela("SISTEMA VTX20 -45MM");
+        RoyalCort VTX32 = royalCortService.findByTela("RC Sistema Roller 32Mm");
+        RoyalCort VTX38 = royalCortService.findByTela("RC Sistema Roller 38Mm");
+        RoyalCort VTX45 = royalCortService.findByTela("RC Sistema Roller 45Mm");
 
-        Flex tela = flexService.findByTela(telaN);
+        RoyalCort tela = royalCortService.findByTela(telaN);
 
         double sist;
         double precioSist;
@@ -99,16 +100,26 @@ public class FlexController {
 
         switch (sistemaEmun) {
             case ROLLER:
-                if (ancho > 59 && ancho < 100) {
-                    sist = VTX32.getPrecio()*100;
-                } else if (ancho >= 100 && ancho <= 160) {
+                if ((ancho > 60 && ancho <= 180 && alto <= 240) ||
+                        (ancho > 180 && ancho <= 210 && alto <= 200) ||
+                        (ancho > 210 && ancho <= 240 && alto <= 100)) {
                     sist = VTX32.getPrecio() * ancho;
-                } else if (ancho > 160 && ancho <= 250) {
+                } else if ((ancho <= 60 && alto > 180 && alto <= 280) ||
+                        (ancho > 60 && ancho <= 90 && alto > 240 && alto <= 280) ||
+                        (ancho > 90 && ancho <= 180 && alto > 240 && alto <= 320) ||
+                        (ancho > 180 && ancho <= 210 && alto > 220 && alto <= 320) ||
+                        (ancho > 210 && ancho <= 240 && alto > 100 && alto <= 320) ||
+                        (ancho > 240 && ancho <= 270 && alto <= 220) ||
+                        (ancho > 270 && ancho <= 300 && alto <= 120)) {
                     sist = VTX38.getPrecio() * ancho;
-                } else if (ancho > 250 && ancho <= 400) {
+                } else if ((ancho > 90 && ancho <= 240 && alto > 320 && alto <= 380) ||
+                        (ancho > 240 && ancho <= 270 && alto > 240 && alto <= 380) ||
+                        (ancho > 270 && ancho <= 300 && alto > 140 && alto <= 260) ||
+                        (ancho > 300 && ancho <= 330 && alto <= 240) ||
+                        (ancho > 360 && ancho <= 360 && alto <= 120)) {
                     sist = VTX45.getPrecio() * ancho;
                 } else {
-                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
+                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.BAD_REQUEST);
                 }
 
                 if (mtTela > 1) {
@@ -118,11 +129,11 @@ public class FlexController {
                 }
 
                 break;
-            case VERTICALES:
+            case ZEBRA:
                 if (ancho > 59 && ancho < 150) {
-                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio()*150;
+                    sist = royalCortService.getSistemas(sistemaEmun).get(0).getPrecio() * 150;
                 } else if (ancho >= 150 && ancho <= 400) {
-                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio() * ancho;
+                    sist = royalCortService.getSistemas(sistemaEmun).get(0).getPrecio() * ancho;
                 } else {
                     return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
                 }
@@ -130,35 +141,17 @@ public class FlexController {
                 if (mtTela > 1.5) {
                     precioTela = tela.getPrecio() * mtTela;
                 } else {
-                    precioTela = tela.getPrecio()*1.5;
-                }
-                break;
-            case PERSIANA:
-            case DUBAI:
-            case ROMANA:
-                if (ancho > 59 && ancho < 100) {
-                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio()*100;
-                } else if (ancho >= 100 && ancho <= 400) {
-                    sist = flexService.getSistemas(sistemaEmun).get(0).getPrecio() * ancho;
-                } else {
-                    return new ResponseEntity<>("Fuera de RANGO", HttpStatus.OK);
-                }
-
-                if (mtTela > 1) {
-                    precioTela = tela.getPrecio() * mtTela;
-                } else {
-                    precioTela = tela.getPrecio();
+                    precioTela = tela.getPrecio() * 1.5;
                 }
                 break;
             default:
                 return new ResponseEntity<>("Sistema no válido", HttpStatus.BAD_REQUEST);
         }
 
-
-        precioSist = sist  / 100;
-
+        precioSist = sist / 100;
         Double total = precioTela + precioSist;
 
+        System.out.println("sistema: " + precioSist / ancho * 100);
         System.out.println("Precio sistema: " + precioSist);
         System.out.println("Ancho: " + ancho);
         System.out.println("Alto: " + alto);
@@ -172,82 +165,82 @@ public class FlexController {
     }
 
     @PostMapping("/filtro")
-    public ResponseEntity<List<Flex>> filtro(@RequestBody BusquedaDto busquedaDto) {
-        FlexCriteria flexCriteria = createCriteria(busquedaDto);
-        List<Flex> list = flexService.findByCriteria(flexCriteria);
+    public ResponseEntity<List<RoyalCort>> filtro(@RequestBody BusquedaDto busquedaDto) {
+        RoyalCortCriteria royalCortCriteria = createCriteria(busquedaDto);
+        List<RoyalCort> list = royalCortService.findByCriteria(royalCortCriteria);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/nuevo")
     @Transactional
-    public ResponseEntity<?> nuevo(@RequestBody FlexDto nuevo) {
+    public ResponseEntity<?> nuevo(@RequestBody RoyalCortDto nuevo) {
 
         if (StringUtils.isBlank(nuevo.getTela()))
             return new ResponseEntity<>("Falta el nombre de la TELA", HttpStatus.BAD_REQUEST);
         if (nuevo.getPrecio() == null)
             return new ResponseEntity<>("Falta el PRECIO", HttpStatus.BAD_REQUEST);
 
-        Flex flex = new Flex(
+        RoyalCort royalCort = new RoyalCort(
 
                 nuevo.getTela(),
                 nuevo.getPrecio(),
                 nuevo.isEsTela(),
                 nuevo.getSistema()
         );
-        flexService.save(flex);
+        royalCortService.save(royalCort);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/editar/{id}")
     @Transactional
-    public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody FlexDto editar) {
+    public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody RoyalCortDto editar) {
 
-        if (!flexService.existById(id))
+        if (!royalCortService.existById(id))
             return new ResponseEntity<>("No existe la TELA", HttpStatus.BAD_REQUEST);
         if (editar.getPrecio() == null)
             return new ResponseEntity<>("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
 
-        Flex flex = flexService.getFlex(id);
+        RoyalCort royalCort = royalCortService.getRC(id);
 
-        flex.setTela(editar.getTela());
-        flex.setPrecio(editar.getPrecio());
-        flex.setEsTela(editar.isEsTela());
-        flex.setSistema(editar.getSistema());
+        royalCort.setTela(editar.getTela());
+        royalCort.setPrecio(editar.getPrecio());
+        royalCort.setEsTela(editar.isEsTela());
+        royalCort.setSistema(editar.getSistema());
 
-        flexService.save(flex);
+        royalCortService.save(royalCort);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("masivo")
     @Transactional
     public ResponseEntity<?> incrementarPrecios(@RequestParam double porcentaje) {
-        List<FlexDto> list = flexService.getFlexsDto();
+        List<RoyalCortDto> list = royalCortService.getRCsDto();
         if (list.isEmpty())
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.BAD_REQUEST);
-        flexService.incrementarPrecios(porcentaje);
+        royalCortService.incrementarPrecios(porcentaje);
         return new ResponseEntity<>("Modificación MASIVA exitosa", HttpStatus.OK);
     }
 
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
-        if (!flexService.existById(id))
+        if (!royalCortService.existById(id))
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
-        flexService.delete(id);
+        royalCortService.delete(id);
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);
     }
 
-    private FlexCriteria createCriteria(BusquedaDto busqueda) {
-        FlexCriteria flexCriteria = new FlexCriteria();
+    private RoyalCortCriteria createCriteria(BusquedaDto busqueda) {
+        RoyalCortCriteria royalCortCriteria = new RoyalCortCriteria();
         if (busqueda != null) {
 
             //Tela
             if (!StringUtils.isBlank(busqueda.getTela())) {
                 StringFilter filter = new StringFilter();
                 filter.setContains(busqueda.getTela());
-                flexCriteria.setTela(filter);
+                royalCortCriteria.setTela(filter);
             }
         }
-        return flexCriteria;
+        return royalCortCriteria;
     }
 }

@@ -2,7 +2,9 @@ package com.fatidecoraciones.pedidos.services;
 
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
+import com.fatidecoraciones.pedidos.repositories.RoyalCortRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class DBService {
     private static final String SCRIPT_PATH = "123.bat";
     @Autowired
     FlexRepository flexRepository;
+    @Autowired
+    RoyalCortRepository royalCortRepository;
     @Value("${spring.datasource.url}")
     private String dbUrl;
     @Value("${spring.datasource.username}")
@@ -55,7 +59,7 @@ public class DBService {
         }
     }
 
-    public void cargarDatosDesdeCSV(MultipartFile file) throws IOException, CsvException {
+    public void cargarDatosFlex(MultipartFile file) throws IOException, CsvException {
         List<Flex> productos = new ArrayList<>();
 
         try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
@@ -86,7 +90,6 @@ public class DBService {
                 }
             }
         }
-
         if (!productos.isEmpty()) {
             flexRepository.saveAll(productos);
             System.out.println("Productos cargados exitosamente.");
@@ -94,4 +97,44 @@ public class DBService {
             System.out.println("No se cargaron productos. Verifica el archivo CSV.");
         }
     }
+
+    public void cargarDatosRC(MultipartFile file) throws IOException, CsvException {
+        List<RoyalCort> productos = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            List<String[]> datos = reader.readAll();
+            for (String[] fila : datos) {
+                if (fila.length >= 4) { // columnas necesarias
+                    RoyalCort producto = new RoyalCort();
+                    producto.setTela(fila[0]);
+                    // Carga precio
+                    try {
+                        producto.setPrecio(Double.parseDouble(fila[1]));
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error al parsear el precio: " + fila[1]);
+                        continue;
+                    }
+                    // Carga si es "tela" o no
+                    producto.setEsTela(Boolean.parseBoolean(fila[2]));
+                    // Carga el sistema
+                    try {
+                        producto.setSistema(Sistema.valueOf(fila[3].toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error al parsear el sistema: " + fila[3]);
+                        continue;
+                    }
+                    productos.add(producto);
+                } else {
+                    System.err.println("Fila incompleta: " + String.join(",", fila));
+                }
+            }
+        }
+        if (!productos.isEmpty()) {
+            royalCortRepository.saveAll(productos);
+            System.out.println("Productos cargados exitosamente.");
+        } else {
+            System.out.println("No se cargaron productos. Verifica el archivo CSV.");
+        }
+    }
+
 }

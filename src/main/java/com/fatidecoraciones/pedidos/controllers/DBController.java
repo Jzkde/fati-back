@@ -25,10 +25,20 @@ public class DBController {
             return "Backup failed: " + e.getMessage();
         }
     }
-    @PostMapping("/carga")
-    public String cargarDatos(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/carga/flex")
+    public String cargarFlex(@RequestParam("file") MultipartFile file) {
         try {
-            dbService.cargarDatosDesdeCSV(file);
+            dbService.cargarDatosFlex(file);
+            return "Datos cargados exitosamente.";
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+            return "Error al cargar los datos: " + e.getMessage();
+        }
+    }
+    @PostMapping("/carga/rc")
+    public String cargarRC(@RequestParam("file") MultipartFile file) {
+        try {
+            dbService.cargarDatosRC(file);
             return "Datos cargados exitosamente.";
         } catch (IOException | CsvException e) {
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package com.fatidecoraciones.pedidos.dtos;
 
 import com.fatidecoraciones.pedidos.enums.Sistema;
-import com.fatidecoraciones.pedidos.models.Flex;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import javax.persistence.Enumerated;
 
 @Getter
 @Setter
-public class FlexDto {
+public class RoyalCortDto {
     private Long id;
     private String tela;
     private Double precio;
@@ -18,14 +18,14 @@ public class FlexDto {
     @Enumerated(EnumType.STRING)
     private Sistema sistema;
 
-    public FlexDto() {
+    public RoyalCortDto() {
     }
 
-    public FlexDto(Flex flex) {
-        this.id = flex.getId();
-        this.tela = flex.getTela();
-        this.precio = flex.getPrecio();
-        this.esTela = flex.isEsTela();
-        this.sistema = flex.getSistema();
+    public RoyalCortDto(RoyalCort royalCort) {
+        this.id = royalCort.getId();
+        this.tela = royalCort.getTela();
+        this.precio = royalCort.getPrecio();
+        this.esTela = royalCort.isEsTela();
+        this.sistema = royalCort.getSistema();
     }
 }
