@@ -5,6 +5,7 @@ import com.fatidecoraciones.pedidos.dtos.FlexDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.Flex_;
+import com.fatidecoraciones.pedidos.models.Pedido_;
 import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.repositories.FlexRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,9 @@ public class FlexService extends QueryService<Flex> {
         if (flexCriteria != null) {
             if (flexCriteria.getTela() != null) {
                 specification = specification.and(buildStringSpecification(flexCriteria.getTela(), Flex_.tela));
+            }
+            if (flexCriteria.getSistema() != null) {
+                specification = specification.and(buildSpecification(flexCriteria.getSistema(), Flex_.sistema));
             }
         }
         return specification;

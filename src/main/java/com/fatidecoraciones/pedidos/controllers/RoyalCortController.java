@@ -1,5 +1,6 @@
 package com.fatidecoraciones.pedidos.controllers;
 
+import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
 import com.fatidecoraciones.pedidos.criteria.RoyalCortCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.RoyalCortDto;
@@ -101,7 +102,7 @@ public class RoyalCortController {
 
         switch (sistemaEmun) {
             case ROLLER:
-                if ((ancho > 60 && ancho <= 180 && alto <= 240) ||
+                if ((ancho >= 60 && ancho <= 180 && alto <= 240) ||
                         (ancho > 180 && ancho <= 210 && alto <= 200) ||
                         (ancho > 210 && ancho <= 240 && alto <= 100)) {
                     sist = VTX32.getPrecio() * ancho;
@@ -113,7 +114,7 @@ public class RoyalCortController {
                         (ancho > 240 && ancho <= 270 && alto <= 220) ||
                         (ancho > 270 && ancho <= 300 && alto <= 120)) {
                     sist = VTX38.getPrecio() * ancho;
-                } else if ((ancho > 90 && ancho <= 240 && alto > 320 && alto <= 380) ||
+                } else if ((ancho >= 90 && ancho <= 240 && alto > 320 && alto <= 380) ||
                         (ancho > 240 && ancho <= 270 && alto > 240 && alto <= 380) ||
                         (ancho > 270 && ancho <= 300 && alto > 140 && alto <= 260) ||
                         (ancho > 300 && ancho <= 330 && alto <= 240) ||
@@ -249,6 +250,12 @@ public class RoyalCortController {
                 StringFilter filter = new StringFilter();
                 filter.setContains(busqueda.getTela());
                 royalCortCriteria.setTela(filter);
+            }
+            if (!StringUtils.isBlank(busqueda.getSistema())) {
+                RoyalCortCriteria.SistemaFilter filter = new RoyalCortCriteria.SistemaFilter();
+                String sistema = busqueda.getSistema().toUpperCase();
+                filter.setEquals(Sistema.valueOf(sistema));
+                royalCortCriteria.setSistema(filter);
             }
         }
         return royalCortCriteria;

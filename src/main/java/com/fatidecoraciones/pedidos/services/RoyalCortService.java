@@ -3,6 +3,7 @@ package com.fatidecoraciones.pedidos.services;
 import com.fatidecoraciones.pedidos.criteria.RoyalCortCriteria;
 import com.fatidecoraciones.pedidos.dtos.RoyalCortDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
+import com.fatidecoraciones.pedidos.models.Flex_;
 import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.models.RoyalCort_;
 import com.fatidecoraciones.pedidos.repositories.RoyalCortRepository;
@@ -90,6 +91,9 @@ public class RoyalCortService extends QueryService<RoyalCort> {
         if (royalCortCriteria != null) {
             if (royalCortCriteria.getTela() != null) {
                 specification = specification.and(buildStringSpecification(royalCortCriteria.getTela(), RoyalCort_.tela));
+            }
+            if (royalCortCriteria.getSistema() != null) {
+                specification = specification.and(buildSpecification(royalCortCriteria.getSistema(), RoyalCort_.sistema));
             }
         }
         return specification;

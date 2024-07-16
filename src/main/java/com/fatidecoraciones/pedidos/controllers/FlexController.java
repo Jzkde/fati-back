@@ -1,8 +1,10 @@
 package com.fatidecoraciones.pedidos.controllers;
 
 import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
+import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
+import com.fatidecoraciones.pedidos.enums.Estado;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
 import com.fatidecoraciones.pedidos.models.RoyalCort;
@@ -257,6 +259,12 @@ public class FlexController {
                 StringFilter filter = new StringFilter();
                 filter.setContains(busqueda.getTela());
                 flexCriteria.setTela(filter);
+            }
+            if (!StringUtils.isBlank(busqueda.getSistema())) {
+                FlexCriteria.SistemaFilter filter = new FlexCriteria.SistemaFilter();
+                String sistema = busqueda.getSistema().toUpperCase();
+                filter.setEquals(Sistema.valueOf(sistema));
+                flexCriteria.setSistema(filter);
             }
         }
         return flexCriteria;
