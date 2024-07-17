@@ -2,16 +2,16 @@ package com.fatidecoraciones.pedidos.dtos;
 
 import com.fatidecoraciones.pedidos.enums.Estado;
 import com.fatidecoraciones.pedidos.models.Pedido;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter @Setter
+@Getter
+@Setter
 public class PedidoDto {
 
-    private  Long id;
+    private Long id;
     private LocalDate fecha_pedido;
     private String provedor;
     private String via;
@@ -46,4 +46,4 @@ public class PedidoDto {
         this.observaciones = pedido.getObservaciones();
     }
 
-   }
+}

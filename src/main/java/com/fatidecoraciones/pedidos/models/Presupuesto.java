@@ -26,16 +26,12 @@ public class Presupuesto {
     private String accesorios;
     private String ambiente;
     private String observaciones;
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="cliente_id")
-    private Cliente cliente;
     private String clienteNombre;
 
     public Presupuesto() {
     }
 
-    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones) {
+    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones, String clienteNombre) {
         this.sistema = sistema;
         this.ancho = ancho;
         this.alto = alto;
@@ -44,5 +40,6 @@ public class Presupuesto {
         this.accesorios = accesorios;
         this.ambiente = ambiente;
         this.observaciones = observaciones;
+        this.clienteNombre = clienteNombre;
     }
 }

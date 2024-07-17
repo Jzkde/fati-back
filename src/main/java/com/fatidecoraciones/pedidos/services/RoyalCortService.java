@@ -3,7 +3,6 @@ package com.fatidecoraciones.pedidos.services;
 import com.fatidecoraciones.pedidos.criteria.RoyalCortCriteria;
 import com.fatidecoraciones.pedidos.dtos.RoyalCortDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
-import com.fatidecoraciones.pedidos.models.Flex_;
 import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.models.RoyalCort_;
 import com.fatidecoraciones.pedidos.repositories.RoyalCortRepository;

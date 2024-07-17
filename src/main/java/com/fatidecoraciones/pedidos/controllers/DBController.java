@@ -25,6 +25,7 @@ public class DBController {
             return "Backup failed: " + e.getMessage();
         }
     }
+
     @PostMapping("/carga/flex")
     public String cargarFlex(@RequestParam("file") MultipartFile file) {
         try {
@@ -35,6 +36,7 @@ public class DBController {
             return "Error al cargar los datos: " + e.getMessage();
         }
     }
+
     @PostMapping("/carga/royal")
     public String cargarRC(@RequestParam("file") MultipartFile file) {
         try {

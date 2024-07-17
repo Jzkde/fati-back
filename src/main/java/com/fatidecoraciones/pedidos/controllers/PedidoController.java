@@ -6,11 +6,7 @@ import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.LlegoDto;
 import com.fatidecoraciones.pedidos.dtos.PedidoDto;
 import com.fatidecoraciones.pedidos.enums.Estado;
-import com.fatidecoraciones.pedidos.models.Cliente;
 import com.fatidecoraciones.pedidos.models.Pedido;
-import com.fatidecoraciones.pedidos.repositories.ClienteRepository;
-import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
-import com.fatidecoraciones.pedidos.services.ClienteService;
 import com.fatidecoraciones.pedidos.services.PedidoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +17,7 @@ import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.LocalDateFilter;
 import tech.jhipster.service.filter.StringFilter;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,12 +28,6 @@ public class PedidoController {
 
     @Autowired
     private PedidoService pedidoService;
-    @Autowired
-    private PedidoRepository pedidoRepository;
-    @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
-    private ClienteService clienteService;
 
     @GetMapping("/lista")
     public ResponseEntity<List<PedidoDto>> lista() {
@@ -71,9 +62,9 @@ public class PedidoController {
         return new ResponseEntity<List<Pedido>>(list, HttpStatus.OK);
     }
 
-    @PostMapping("/nuevo/{id}")
-    public ResponseEntity<?> nuevo(@PathVariable("id") Long id,
-                                   @RequestBody PedidoDto nuevo) {
+    @PostMapping("/nuevo")
+    @Transactional
+    public ResponseEntity<?> nuevo(@RequestBody PedidoDto nuevo) {
 
         if (StringUtils.isBlank(nuevo.getProvedor()))
             return new ResponseEntity<>("Falta el PROVEDOR", HttpStatus.BAD_REQUEST);
@@ -90,28 +81,27 @@ public class PedidoController {
         if (StringUtils.isBlank(nuevo.getResponsable()))
             return new ResponseEntity<>("Falta el RESPONSABLE del pedido", HttpStatus.BAD_REQUEST);
 
-        Cliente cliente = clienteService.getCliente(id);
-
-
         Pedido pedido = new Pedido(
 
+                LocalDate.now(),
                 nuevo.getProvedor(),
                 nuevo.getVia(),
                 nuevo.getN_pedido(),
                 nuevo.getN_factura(),
                 nuevo.getN_remito(),
                 nuevo.getMonto(),
+                false,
+                Estado.PEDIDO,
+                nuevo.getClienteNombre(),
                 nuevo.getResponsable(),
                 nuevo.getObservaciones()
         );
-        cliente.addPedidos(pedido);
-
-        clienteRepository.save(cliente);
-        pedidoRepository.save(pedido);
+        pedidoService.save(pedido);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/actualizar/{id}")
+    @Transactional
     public ResponseEntity<?> actualizar(@PathVariable("id") Long id,
                                         @RequestBody LlegoDto llego) {
         if (!pedidoService.existById(id))
@@ -123,14 +113,14 @@ public class PedidoController {
                 pedido.setLlego(true);
                 pedido.setFecha_llegada(LocalDate.now());
                 pedido.setEstado(Estado.LLEGO);
-                pedidoRepository.save(pedido);
+                pedidoService.save(pedido);
                 return new ResponseEntity<>("El Pedido LLEGO", HttpStatus.OK);
             } else {
                 Pedido pedido = pedidoService.getPedido(id);
                 pedido.setLlego(false);
                 pedido.setFecha_llegada(null);
                 pedido.setEstado(Estado.PEDIDO);
-                pedidoRepository.save(pedido);
+                pedidoService.save(pedido);
                 return new ResponseEntity<>("El Pedido NO Llego", HttpStatus.OK);
             }
 
@@ -138,6 +128,7 @@ public class PedidoController {
     }
 
     @PutMapping("/editar/{id}")
+    @Transactional
     public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody PedidoDto editar) {
 
         if (editar.getFecha_pedido() == null)
@@ -171,6 +162,7 @@ public class PedidoController {
         pedido.setMonto(editar.getMonto());
         pedido.setEstado(editar.getEstado());
         pedido.setLlego(editar.isLlego());
+        pedido.setClienteNombre(editar.getClienteNombre());
         pedido.setResponsable(editar.getResponsable());
         pedido.setObservaciones(editar.getObservaciones());
 
@@ -183,15 +175,16 @@ public class PedidoController {
             pedido.setLlego(true);
         }
 
-        pedidoRepository.save(pedido);
+        pedidoService.save(pedido);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/borrar/{id}")
+    @Transactional
     public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
         if (!pedidoService.existById(id))
             return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
-        pedidoRepository.deleteById(id);
+        pedidoService.delete(id);
         return new ResponseEntity<>("PEDIDO borrado", HttpStatus.OK);
     }
 

@@ -7,9 +7,8 @@ import com.fatidecoraciones.pedidos.models.Presupuesto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
-
-@Getter @Setter
+@Getter
+@Setter
 public class PresupuestoDto {
 
     private Long id;
@@ -28,7 +27,7 @@ public class PresupuestoDto {
 
     public PresupuestoDto(Presupuesto presupuesto) {
         this.id = presupuesto.getId();
-        this.sistema =presupuesto.getSistema();
+        this.sistema = presupuesto.getSistema();
         this.ancho = presupuesto.getAncho();
         this.alto = presupuesto.getAlto();
         this.comando = presupuesto.getComando();

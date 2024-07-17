@@ -19,7 +19,6 @@ public abstract class Pedido_ {
 	public static volatile SingularAttribute<Pedido, Boolean> llego;
 	public static volatile SingularAttribute<Pedido, String> via;
 	public static volatile SingularAttribute<Pedido, String> clienteNombre;
-	public static volatile SingularAttribute<Pedido, Cliente> cliente;
 	public static volatile SingularAttribute<Pedido, LocalDate> fecha_pedido;
 	public static volatile SingularAttribute<Pedido, Double> monto;
 	public static volatile SingularAttribute<Pedido, String> n_pedido;
@@ -35,7 +34,6 @@ public abstract class Pedido_ {
 	public static final String LLEGO = "llego";
 	public static final String VIA = "via";
 	public static final String CLIENTE_NOMBRE = "clienteNombre";
-	public static final String CLIENTE = "cliente";
 	public static final String FECHA_PEDIDO = "fecha_pedido";
 	public static final String MONTO = "monto";
 	public static final String N_PEDIDO = "n_pedido";

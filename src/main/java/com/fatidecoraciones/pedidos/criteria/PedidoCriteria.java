@@ -6,7 +6,6 @@ import tech.jhipster.service.filter.*;
 
 @Data
 public class PedidoCriteria {
-    public static class EstadoFilter extends Filter<Estado> {}
     private LongFilter id;
     private LocalDateFilter fecha_pedido;
     private StringFilter provedor;
@@ -20,12 +19,11 @@ public class PedidoCriteria {
     private EstadoFilter estado;
     private StringFilter clienteNombre;
     private StringFilter responsable;
-
     public PedidoCriteria() {
     }
 
     public PedidoCriteria(LongFilter id, LocalDateFilter fecha_pedido, StringFilter provedor, StringFilter via, StringFilter n_pedido, StringFilter n_factura, StringFilter n_remito, DoubleFilter monto, BooleanFilter llego, LocalDateFilter fecha_llegada, EstadoFilter estado, StringFilter clienteNombre, StringFilter responsable) {
-        this.id= id;
+        this.id = id;
         this.fecha_pedido = fecha_pedido;
         this.provedor = provedor;
         this.via = via;
@@ -40,4 +38,7 @@ public class PedidoCriteria {
         this.responsable = responsable;
     }
 
-   }
+    public static class EstadoFilter extends Filter<Estado> {
+    }
+
+}

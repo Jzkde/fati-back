@@ -11,7 +11,6 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Presupuesto.class)
 public abstract class Presupuesto_ {
 
-	public static volatile SingularAttribute<Presupuesto, Cliente> cliente;
 	public static volatile SingularAttribute<Presupuesto, String> clienteNombre;
 	public static volatile SingularAttribute<Presupuesto, Sistema> sistema;
 	public static volatile SingularAttribute<Presupuesto, String> ambiente;
@@ -23,7 +22,6 @@ public abstract class Presupuesto_ {
 	public static volatile SingularAttribute<Presupuesto, Integer> alto;
 	public static volatile SingularAttribute<Presupuesto, Apertura> apertura;
 
-	public static final String CLIENTE = "cliente";
 	public static final String CLIENTE_NOMBRE = "clienteNombre";
 	public static final String SISTEMA = "sistema";
 	public static final String AMBIENTE = "ambiente";

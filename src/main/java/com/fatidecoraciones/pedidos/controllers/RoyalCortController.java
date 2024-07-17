@@ -1,6 +1,5 @@
 package com.fatidecoraciones.pedidos.controllers;
 
-import com.fatidecoraciones.pedidos.criteria.FlexCriteria;
 import com.fatidecoraciones.pedidos.criteria.RoyalCortCriteria;
 import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.RoyalCortDto;

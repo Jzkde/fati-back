@@ -9,12 +9,10 @@ import tech.jhipster.service.filter.StringFilter;
 
 @Data
 public class RoyalCortCriteria {
-    public static class SistemaFilter extends Filter<Sistema> {}
     private LongFilter id;
     private StringFilter tela;
     private DoubleFilter precio;
     private SistemaFilter sistema;
-
     public RoyalCortCriteria() {
     }
 
@@ -23,5 +21,8 @@ public class RoyalCortCriteria {
         this.tela = tela;
         this.precio = precio;
         this.sistema = sistema;
+    }
+
+    public static class SistemaFilter extends Filter<Sistema> {
     }
 }
