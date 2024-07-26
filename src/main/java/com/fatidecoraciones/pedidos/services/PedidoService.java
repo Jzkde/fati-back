@@ -4,7 +4,6 @@ import com.fatidecoraciones.pedidos.criteria.PedidoCriteria;
 import com.fatidecoraciones.pedidos.dtos.PedidoDto;
 import com.fatidecoraciones.pedidos.models.Pedido;
 import com.fatidecoraciones.pedidos.models.Pedido_;
-import com.fatidecoraciones.pedidos.reportes.ReporteEspecial;
 import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,8 +18,6 @@ public class PedidoService extends QueryService<Pedido> {
 
     @Autowired
     private PedidoRepository pedidoRepository;
-    @Autowired
-    private ReporteEspecial reporteEspecial;
 
     public boolean existById(Long id) {
         return pedidoRepository.existsById(id);

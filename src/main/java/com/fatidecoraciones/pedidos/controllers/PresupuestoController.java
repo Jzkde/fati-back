@@ -7,16 +7,34 @@ import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
+import com.fatidecoraciones.pedidos.reportes.ReporteSistemas;
+import com.fatidecoraciones.pedidos.reportes.ReporteTelas;
 import com.fatidecoraciones.pedidos.services.PresupuestoService;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("presupuesto")
@@ -177,6 +195,123 @@ public class PresupuestoController {
             return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
         presupuestoService.delete(id);
         return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
+    }
+
+    @PostMapping("/pdf")
+    public ResponseEntity<byte[]> generarPdf(@RequestBody List<Presupuesto> presupuestos) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            Map<Sistema, List<Presupuesto>> presupuestosPorSistema = presupuestos.stream()
+                    .collect(Collectors.groupingBy(Presupuesto::getSistema));
+
+            Set<Sistema> sistemas = presupuestosPorSistema.keySet();
+
+            if (sistemas.size() == 1) {
+                // Si solo hay un tipo de sistema, generar un solo archivo PDF
+                Sistema unicoSistema = sistemas.iterator().next();
+                ByteArrayOutputStream pdfBaos = new ByteArrayOutputStream();
+                PdfWriter writer = new PdfWriter(pdfBaos);
+                PdfDocument pdfDocument = new PdfDocument(writer);
+
+                // Configurar tamaño y orientación
+                PageSize pageSize;
+                if (unicoSistema == Sistema.TELA) {
+                    pageSize = new PageSize(PageSize.A4.getHeight() / 2, PageSize.A4.getWidth());
+                } else {
+                    pageSize = new PageSize(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+                }
+
+                pdfDocument.setDefaultPageSize(pageSize);
+                Document document = new Document(pdfDocument);
+
+                Paragraph titulo = new Paragraph("FATI Decoraciones").setUnderline().setItalic().setTextAlignment(TextAlignment.CENTER).setFontSize(16);
+                document.add(titulo);
+                Paragraph espacio = new Paragraph("").setFontSize(16);
+                document.add(espacio);
+                Paragraph cliente = new Paragraph("Cliente:____________________  Tel:____________________").setFontSize(12);
+                document.add(cliente);
+                Paragraph domicilio = new Paragraph("Domicilio:__________________________________________").setFontSize(12);
+                document.add(domicilio);
+                document.add(espacio);
+                Paragraph sist = new Paragraph("Sistema: " + unicoSistema).setUnderline().setFontSize(12);
+                document.add(sist);
+
+                if (unicoSistema == Sistema.TELA) {
+                    ReporteTelas.repoTelas(document, presupuestosPorSistema.get(Sistema.TELA));
+                } else {
+                    ReporteSistemas.repoSistemas(document, presupuestosPorSistema.get(unicoSistema));
+                }
+
+                document.close();
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                headers.setContentDispositionFormData("attachment", "presupuesto_" + unicoSistema.name().toLowerCase() + ".pdf");
+                headers.setContentLength(pdfBaos.size());
+
+                return new ResponseEntity<>(pdfBaos.toByteArray(), headers, HttpStatus.OK);
+
+            } else {
+                // Si hay más de un tipo de sistema, generar un archivo ZIP
+                try (ZipOutputStream zipOut = new ZipOutputStream(baos)) {
+                    for (Map.Entry<Sistema, List<Presupuesto>> entry : presupuestosPorSistema.entrySet()) {
+                        Sistema sistema = entry.getKey();
+                        List<Presupuesto> presupuestosDelSistema = entry.getValue();
+
+                        ByteArrayOutputStream pdfBaos = new ByteArrayOutputStream();
+                        PdfWriter writer = new PdfWriter(pdfBaos);
+                        PdfDocument pdfDocument = new PdfDocument(writer);
+
+                        // Configurar tamaño y orientación
+                        PageSize pageSize;
+                        if (sistema == Sistema.TELA) {
+                            pageSize = new PageSize(PageSize.A4.getHeight() / 2, PageSize.A4.getWidth());
+                        } else {
+                            pageSize = new PageSize(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+                        }
+
+                        pdfDocument.setDefaultPageSize(pageSize);
+                        Document document = new Document(pdfDocument);
+
+                        Paragraph titulo = new Paragraph("FATI Decoraciones").setUnderline().setItalic().setTextAlignment(TextAlignment.CENTER).setFontSize(16);
+                        document.add(titulo);
+                        Paragraph espacio = new Paragraph("").setFontSize(16);
+                        document.add(espacio);
+                        Paragraph cliente = new Paragraph("Cliente:____________________  Tel:____________________").setFontSize(12);
+                        document.add(cliente);
+                        Paragraph domicilio = new Paragraph("Domicilio:__________________________________________").setFontSize(12);
+                        document.add(domicilio);
+                        document.add(espacio);
+                        Paragraph sist = new Paragraph("Sistema: " + sistema).setUnderline().setFontSize(12);
+                        document.add(sist);
+
+                        if (sistema == Sistema.TELA) {
+                            ReporteTelas.repoTelas(document, presupuestosDelSistema);
+                        } else {
+                            ReporteSistemas.repoSistemas(document, presupuestosDelSistema);
+                        }
+
+                        document.close();
+
+                        String zipEntryName = "presupuesto_" + sistema.name().toLowerCase() + ".pdf";
+                        ZipEntry zipEntry = new ZipEntry(zipEntryName);
+                        zipOut.putNextEntry(zipEntry);
+                        zipOut.write(pdfBaos.toByteArray());
+                        zipOut.closeEntry();
+                    }
+                }
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                headers.setContentDispositionFormData("attachment", "presupuestos.zip");
+                headers.setContentLength(baos.size());
+
+                return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private PresupuestoCriteria createCriteria(BusquedaDto busqueda) {

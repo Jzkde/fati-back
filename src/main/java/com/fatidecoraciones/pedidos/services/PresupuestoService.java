@@ -2,6 +2,7 @@ package com.fatidecoraciones.pedidos.services;
 
 import com.fatidecoraciones.pedidos.criteria.PresupuestoCriteria;
 import com.fatidecoraciones.pedidos.dtos.PresupuestoDto;
+import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Presupuesto;
 import com.fatidecoraciones.pedidos.models.Presupuesto_;
 import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
@@ -45,6 +46,10 @@ public class PresupuestoService extends QueryService<Presupuesto> {
 
     public void delete(Long id) {
         presupuestoRepository.deleteById(id);
+    }
+
+    public boolean comparar (List<Presupuesto> presupuestos, Sistema sistema) {
+        return presupuestos.stream().allMatch(p -> p.getSistema().equals(sistema));
     }
 
     public List<Presupuesto> findByCriteria(PresupuestoCriteria presupuestoCriteria) {
