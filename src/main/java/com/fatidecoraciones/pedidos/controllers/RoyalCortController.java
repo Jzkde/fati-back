@@ -240,6 +240,11 @@ public class RoyalCortController {
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);
     }
 
+    @GetMapping("/adicional")
+    public List<RoyalCort> getAdicionales() {
+        return royalCortService.getRoyalCortsBySistema(Sistema.ADICIONAL);
+    }
+
     private RoyalCortCriteria createCriteria(BusquedaDto busqueda) {
         RoyalCortCriteria royalCortCriteria = new RoyalCortCriteria();
         if (busqueda != null) {

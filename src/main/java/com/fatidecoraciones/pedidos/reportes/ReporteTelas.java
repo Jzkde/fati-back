@@ -8,6 +8,7 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
@@ -22,7 +23,7 @@ public class ReporteTelas {
         for (Presupuesto presupuesto : presupuestos) {
             float[] columnWidths = {10, 15, 15, 10, 50};
             Table table = new Table(UnitValue.createPercentArray(columnWidths));
-            table.setWidth(UnitValue.createPercentValue(100));
+            table.setWidth(UnitValue.createPercentValue(80));
 
             // Primera fila
             table.addCell(new Cell().add(new Paragraph("")).setFontSize(10).setBorder(Border.NO_BORDER));
@@ -66,18 +67,18 @@ public class ReporteTelas {
             table.addCell(new Cell().add(new Paragraph("")).setFontSize(10).setBorder(Border.NO_BORDER));
             table.addCell(new Cell().add(new Paragraph("Accesorios: " + presupuesto.getAccesorios())).setFontSize(10).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
 
-            document.add(table);
+            document.add(table.setHorizontalAlignment(HorizontalAlignment.CENTER));
             document.add(espacio);
 
             float[] columnWidth = {10, 10, 80};
             Table table2 = new Table(UnitValue.createPercentArray(columnWidth));
-            table2.setWidth(UnitValue.createPercentValue(100));
+            table2.setWidth(UnitValue.createPercentValue(80));
 
             table2.addCell(new Cell().add(new Paragraph()).setFontSize(10).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
             table2.addCell(new Cell().add(new Paragraph("Obs: ")).setFontSize(10).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
             table2.addCell(new Cell(1, 4).add(new Paragraph(presupuesto.getObservaciones())).setFontSize(10).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
 
-            document.add(table2);
+            document.add(table2.setHorizontalAlignment(HorizontalAlignment.CENTER));
             document.add(espacio);
         }
     }

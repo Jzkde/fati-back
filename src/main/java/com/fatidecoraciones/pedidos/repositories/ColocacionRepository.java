@@ -1,9 +1,8 @@
 package com.fatidecoraciones.pedidos.repositories;
 
 import com.fatidecoraciones.pedidos.enums.Sistema;
-import com.fatidecoraciones.pedidos.models.RoyalCort;
+import com.fatidecoraciones.pedidos.models.Colocacion;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,16 +11,13 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface RoyalCortRepository extends JpaRepository<RoyalCort, Long>,
-        JpaSpecificationExecutor<RoyalCort> {
+public interface ColocacionRepository extends JpaRepository<Colocacion, Long> {
 
-    RoyalCort findByTela(String tela);
-
-    List<RoyalCort> findBySistema (Sistema sistema);
+    Colocacion findByTipo(String tipo);
 
     @Modifying
     @Transactional
-    @Query("UPDATE RoyalCort p SET p.precio = p.precio * :porcentaje")
+    @Query("UPDATE Colocacion p SET p.precio = p.precio * :porcentaje")
     void actualizarPrecios(double porcentaje);
 
 }

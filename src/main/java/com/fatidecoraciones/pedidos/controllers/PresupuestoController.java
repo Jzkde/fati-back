@@ -209,6 +209,7 @@ public class PresupuestoController {
                 // Si solo hay un tipo de sistema, generar un solo archivo PDF
                 Sistema unicoSistema = sistemas.iterator().next();
                 ByteArrayOutputStream pdfBaos = new ByteArrayOutputStream();
+
                 PdfWriter writer = new PdfWriter(pdfBaos);
                 PdfDocument pdfDocument = new PdfDocument(writer);
 
@@ -221,7 +222,7 @@ public class PresupuestoController {
                 }
 
                 pdfDocument.setDefaultPageSize(pageSize);
-                Document document = new Document(pdfDocument);
+                Document document = new Document(pdfDocument, pageSize);
 
                 Paragraph titulo = new Paragraph("FATI Decoraciones").setUnderline().setItalic().setTextAlignment(TextAlignment.CENTER).setFontSize(16);
                 document.add(titulo);
@@ -270,7 +271,7 @@ public class PresupuestoController {
                         }
 
                         pdfDocument.setDefaultPageSize(pageSize);
-                        Document document = new Document(pdfDocument);
+                        Document document = new Document(pdfDocument, pageSize);
 
                         Paragraph titulo = new Paragraph("FATI Decoraciones").setUnderline().setItalic().setTextAlignment(TextAlignment.CENTER).setFontSize(16);
                         document.add(titulo);

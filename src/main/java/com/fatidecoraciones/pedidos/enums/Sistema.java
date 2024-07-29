@@ -8,5 +8,6 @@ public enum Sistema {
     DUBAI,
     ORIENTAL,
     ROMANA,
-    ZEBRA
+    ZEBRA,
+    ADICIONAL
 }

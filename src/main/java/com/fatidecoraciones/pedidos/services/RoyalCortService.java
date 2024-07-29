@@ -29,24 +29,24 @@ public class RoyalCortService extends QueryService<RoyalCort> {
         return royalCortRepository.findById(id).orElse(null);
     }
 
-    public void save(RoyalCort royalCort) {
-        royalCortRepository.save(royalCort);
+    public List<RoyalCort> getRCs() {
+        return royalCortRepository.findAll();
     }
 
-    public RoyalCort saveVarios(RoyalCort royalCort) {
-        return royalCortRepository.save(royalCort);
+    public RoyalCortDto getRCDto(Long id) {
+        return new RoyalCortDto(this.getRC(id));
     }
 
     public List<RoyalCortDto> getRCsDto() {
         return royalCortRepository.findAll().stream().map(RoyalCortDto::new).collect(Collectors.toList());
     }
 
-    public List<RoyalCort> getRC() {
-        return royalCortRepository.findAll();
+    public void save(RoyalCort royalCort) {
+        royalCortRepository.save(royalCort);
     }
 
-    public RoyalCortDto getRCDto(Long id) {
-        return new RoyalCortDto(this.getRC(id));
+    public RoyalCort saveVarios(RoyalCort royalCort) {
+        return royalCortRepository.save(royalCort);
     }
 
     public void delete(Long id) {
@@ -60,6 +60,10 @@ public class RoyalCortService extends QueryService<RoyalCort> {
 
     public RoyalCort findByTela(String tela) {
         return royalCortRepository.findByTela(tela);
+    }
+
+    public List<RoyalCort> getRoyalCortsBySistema (Sistema sistema) {
+        return royalCortRepository.findBySistema(sistema);
     }
 
     public List<RoyalCortDto> getSistemas(Sistema sistema) {

@@ -29,24 +29,24 @@ public class FlexService extends QueryService<Flex> {
         return flexRepository.findById(id).orElse(null);
     }
 
-    public void save(Flex flex) {
-        flexRepository.save(flex);
-    }
-
-    public Flex saveVarios(Flex flex) {
-        return flexRepository.save(flex);
-    }
-
-    public List<FlexDto> getFlexsDto() {
-        return flexRepository.findAll().stream().map(FlexDto::new).collect(Collectors.toList());
-    }
-
     public List<Flex> getFlexs() {
         return flexRepository.findAll();
     }
 
     public FlexDto getFlexDto(Long id) {
         return new FlexDto(this.getFlex(id));
+    }
+
+    public List<FlexDto> getFlexsDto() {
+        return flexRepository.findAll().stream().map(FlexDto::new).collect(Collectors.toList());
+    }
+
+    public void save(Flex flex) {
+        flexRepository.save(flex);
+    }
+
+    public Flex saveVarios(Flex flex) {
+        return flexRepository.save(flex);
     }
 
     public void delete(Long id) {
@@ -60,6 +60,10 @@ public class FlexService extends QueryService<Flex> {
 
     public Flex findByTela(String tela) {
         return flexRepository.findByTela(tela);
+    }
+
+    public List<Flex> getFlexBySistema(Sistema sistema) {
+        return flexRepository.findBySistema(sistema);
     }
 
     public List<FlexDto> getSistemas(Sistema sistema) {

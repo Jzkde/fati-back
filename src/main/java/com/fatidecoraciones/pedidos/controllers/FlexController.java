@@ -5,6 +5,7 @@ import com.fatidecoraciones.pedidos.dtos.BusquedaDto;
 import com.fatidecoraciones.pedidos.dtos.FlexDto;
 import com.fatidecoraciones.pedidos.enums.Sistema;
 import com.fatidecoraciones.pedidos.models.Flex;
+import com.fatidecoraciones.pedidos.models.RoyalCort;
 import com.fatidecoraciones.pedidos.services.FlexService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,6 +246,11 @@ public class FlexController {
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
         flexService.delete(id);
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);
+    }
+
+    @GetMapping("/adicional")
+    public List<Flex> getAdicionales() {
+        return flexService.getFlexBySistema(Sistema.ADICIONAL);
     }
 
     private FlexCriteria createCriteria(BusquedaDto busqueda) {
