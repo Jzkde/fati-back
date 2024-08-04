@@ -3,6 +3,8 @@ package com.fatidecoraciones.pedidos.controllers;
 import com.fatidecoraciones.pedidos.services.DBService;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,35 +18,35 @@ public class DBController {
     private DBService dbService;
 
     @GetMapping("/backup")
-    public String backupDatabase() {
+    public ResponseEntity<String> backupDatabase() {
         try {
             dbService.backupDatabase();
-            return "Backup successful.";
+            return new ResponseEntity<>("Copia de serguridad EXITOSA.", HttpStatus.OK);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            return "Backup failed: " + e.getMessage();
+            return new ResponseEntity<>("Copia de seguridad FALLO: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/carga/flex")
-    public String cargarFlex(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> cargarFlex(@RequestParam("file") MultipartFile file) {
         try {
             dbService.cargarDatosFlex(file);
-            return "Datos cargados exitosamente.";
+            return new ResponseEntity<>("Datos cargados exitosamente.", HttpStatus.OK);
         } catch (IOException | CsvException e) {
             e.printStackTrace();
-            return "Error al cargar los datos: " + e.getMessage();
+            return new ResponseEntity<>("Error al cargar los datos: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/carga/royal")
-    public String cargarRC(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> cargarRC(@RequestParam("file") MultipartFile file) {
         try {
             dbService.cargarDatosRC(file);
-            return "Datos cargados exitosamente.";
+            return new ResponseEntity<>("Datos cargados exitosamente.", HttpStatus.OK);
         } catch (IOException | CsvException e) {
             e.printStackTrace();
-            return "Error al cargar los datos: " + e.getMessage();
+            return new ResponseEntity<>("Error al cargar los datos: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

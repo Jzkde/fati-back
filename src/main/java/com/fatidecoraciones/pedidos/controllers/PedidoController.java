@@ -39,9 +39,8 @@ public class PedidoController {
     public ResponseEntity<PedidoDto> uno(@PathVariable("id") Long id) {
 
         if (pedidoService.getPedido(id) == null) {
-            return new ResponseEntity("El PEDIDO no existe o fue BORRADO", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("El PEDIDO no existe o fue BORRADO", HttpStatus.NOT_FOUND);
         }
-
         PedidoDto uno = pedidoService.getPedidoDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
     }
@@ -52,34 +51,41 @@ public class PedidoController {
         busquedaDto.setId(id);
         PedidoCriteria pedidoCriteria = createCriteria(busquedaDto);
         List<Pedido> list = pedidoService.findByCriteria(pedidoCriteria);
-        return new ResponseEntity<List<Pedido>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/filtro")
     public ResponseEntity<List<Pedido>> filtro(@RequestBody BusquedaDto busquedaDto) {
         PedidoCriteria pedidoCriteria = createCriteria(busquedaDto);
         List<Pedido> list = pedidoService.findByCriteria(pedidoCriteria);
-        return new ResponseEntity<List<Pedido>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/nuevo")
     @Transactional
-    public ResponseEntity<?> nuevo(@RequestBody PedidoDto nuevo) {
+    public ResponseEntity<String> nuevo(@RequestBody PedidoDto nuevo) {
 
-        if (StringUtils.isBlank(nuevo.getProvedor()))
+        if (StringUtils.isBlank(nuevo.getProvedor())) {
             return new ResponseEntity<>("Falta el PROVEDOR", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(nuevo.getVia()))
+        }
+        if (StringUtils.isBlank(nuevo.getVia())) {
             return new ResponseEntity<>("Falta el MEDIO por que se realiza el pedido", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(nuevo.getN_pedido()))
+        }
+        if (StringUtils.isBlank(nuevo.getN_pedido())) {
             return new ResponseEntity<>("Falta el NUMERO de PEDIDO", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(nuevo.getN_factura()))
+        }
+        if (StringUtils.isBlank(nuevo.getN_factura())) {
             return new ResponseEntity<>("Falta el NUMERO de FACTURA", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(nuevo.getN_remito()))
+        }
+        if (StringUtils.isBlank(nuevo.getN_remito())) {
             return new ResponseEntity<>("Falta el NUMERO de REMITO", HttpStatus.BAD_REQUEST);
-//        if (nuevo.getMonto() <= 0)
-//            return new ResponseEntity<> ("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(nuevo.getResponsable()))
+        }
+//        if (nuevo.getMonto() <= 0) {
+//            return new ResponseEntity<>("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
+//        }
+        if (StringUtils.isBlank(nuevo.getResponsable())) {
             return new ResponseEntity<>("Falta el RESPONSABLE del pedido", HttpStatus.BAD_REQUEST);
+        }
 
         Pedido pedido = new Pedido(
 
@@ -102,28 +108,27 @@ public class PedidoController {
 
     @PutMapping("/actualizar/{id}")
     @Transactional
-    public ResponseEntity<?> actualizar(@PathVariable("id") Long id,
-                                        @RequestBody LlegoDto llego) {
-        if (!pedidoService.existById(id))
+    public ResponseEntity<String> actualizar(@PathVariable("id") Long id,
+                                             @RequestBody LlegoDto llego) {
+        if (!pedidoService.existById(id)) {
             return new ResponseEntity<>("No Existe", HttpStatus.NOT_FOUND);
-
-        if (llego.getLlego().equals("true") || llego.getLlego().equals("false"))
+        }
+        if (llego.getLlego().equals("true") || llego.getLlego().equals("false")) {
+            Pedido pedido = pedidoService.getPedido(id);
             if (llego.getLlego().equals("true")) {
-                Pedido pedido = pedidoService.getPedido(id);
                 pedido.setLlego(true);
                 pedido.setFecha_llegada(LocalDate.now());
                 pedido.setEstado(Estado.LLEGO);
                 pedidoService.save(pedido);
                 return new ResponseEntity<>("El Pedido LLEGO", HttpStatus.OK);
             } else {
-                Pedido pedido = pedidoService.getPedido(id);
                 pedido.setLlego(false);
                 pedido.setFecha_llegada(null);
                 pedido.setEstado(Estado.PEDIDO);
                 pedidoService.save(pedido);
                 return new ResponseEntity<>("El Pedido NO Llego", HttpStatus.OK);
             }
-
+        }
         return new ResponseEntity<>("ERROR", HttpStatus.BAD_REQUEST);
     }
 
@@ -131,27 +136,35 @@ public class PedidoController {
     @Transactional
     public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody PedidoDto editar) {
 
-        if (editar.getFecha_pedido() == null)
+        if (editar.getFecha_pedido() == null) {
             return new ResponseEntity<>("Falta la FECHA DEL PEDIDO", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getProvedor()))
+        }
+        if (StringUtils.isBlank(editar.getProvedor())) {
             return new ResponseEntity<>("Falta el PROVEDOR", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getVia()))
+        }
+        if (StringUtils.isBlank(editar.getVia())) {
             return new ResponseEntity<>("Falta el MEDIO por que se realiza el pedido", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getN_pedido()))
+        }
+        if (StringUtils.isBlank(editar.getN_pedido())) {
             return new ResponseEntity<>("Falta el NUMERO de PEDIDO", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getN_factura()))
+        }
+        if (StringUtils.isBlank(editar.getN_factura())) {
             return new ResponseEntity<>("Falta el NUMERO de FACTURA", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getN_remito()))
+        }
+        if (StringUtils.isBlank(editar.getN_remito())) {
             return new ResponseEntity<>("Falta el NUMERO de REMITO", HttpStatus.BAD_REQUEST);
-        if (editar.getMonto() <= 0)
-            return new ResponseEntity<>("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getEstado().name()))
+        }
+        if (editar.getMonto() <= 0) {
+            return new ResponseEntity<>("El MONTO de puede ser 0 o negativo", HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(editar.getEstado().name())) {
             return new ResponseEntity<>("Falta el ESTADO del pedido", HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(editar.getResponsable()))
+        }
+        if (StringUtils.isBlank(editar.getResponsable())) {
             return new ResponseEntity<>("Falta el RESPONSABLE del pedido", HttpStatus.BAD_REQUEST);
+        }
 
         Pedido pedido = pedidoService.getPedido(id);
-
 
         pedido.setFecha_pedido(editar.getFecha_pedido());
         pedido.setVia(editar.getVia());
@@ -182,8 +195,9 @@ public class PedidoController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
-        if (!pedidoService.existById(id))
+        if (!pedidoService.existById(id)) {
             return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
+        }
         pedidoService.delete(id);
         return new ResponseEntity<>("PEDIDO borrado", HttpStatus.OK);
     }
@@ -287,6 +301,5 @@ public class PedidoController {
         }
         return pedidoCriteria;
     }
-
 }
 

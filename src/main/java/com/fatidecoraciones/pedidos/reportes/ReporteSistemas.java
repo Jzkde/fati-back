@@ -66,7 +66,5 @@ public class ReporteSistemas {
         table2.addCell("Pedido Nº ").setFontSize(10);
 
         document.add(table2);
-        document.add(espacio);
-        document.add(espacio);
     }
 }

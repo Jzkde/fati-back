@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("fati")
 @CrossOrigin
-public class ColocacionControler {
+public class ColocacionController {
 
     @Autowired
     ColocacionService colocacionService;
@@ -24,18 +24,19 @@ public class ColocacionControler {
     @GetMapping("/lista")
     public ResponseEntity<List<ColocacionDto>> lista() {
         List<ColocacionDto> list = colocacionService.getColocsDto();
-        if (list.isEmpty())
-            return new ResponseEntity("No hay SERVICIOS cargados", HttpStatus.NOT_FOUND);
+        if (list.isEmpty()) {
+            return new ResponseEntity("No hay SERVICIOS cargados", HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/lista/{id}")
     public ResponseEntity<ColocacionDto> uno(@PathVariable("id") Long id) {
 
-        if (colocacionService.getColoc(id) == null) {
+        ColocacionDto uno = colocacionService.getColocDto(id);
+        if (uno == null) {
             return new ResponseEntity("El SERVICIO no existe o fue BORRADO", HttpStatus.NOT_FOUND);
         }
-        ColocacionDto uno = colocacionService.getColocDto(id);
         return new ResponseEntity<>(uno, HttpStatus.OK);
     }
 
@@ -43,28 +44,30 @@ public class ColocacionControler {
     @Transactional
     public ResponseEntity<?> nuevo(@RequestBody ColocacionDto nuevo) {
 
-        if (StringUtils.isBlank(nuevo.getTipo()))
+        if (StringUtils.isBlank(nuevo.getTipo())) {
             return new ResponseEntity<>("Falta el nombre de la TELA", HttpStatus.BAD_REQUEST);
-        if (nuevo.getPrecio() == null)
+        }
+        if (nuevo.getPrecio() == null) {
             return new ResponseEntity<>("Falta el PRECIO", HttpStatus.BAD_REQUEST);
-
+        }
         Colocacion colocacion = new Colocacion(
-
                 nuevo.getTipo(),
                 nuevo.getPrecio()
         );
         colocacionService.save(colocacion);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Colocación creada con éxito", HttpStatus.CREATED);
     }
 
     @PutMapping("/editar/{id}")
     @Transactional
     public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody ColocacionDto editar) {
 
-        if (!colocacionService.existById(id))
-            return new ResponseEntity<>("No existe la TELA", HttpStatus.BAD_REQUEST);
-        if (editar.getPrecio() == null)
-            return new ResponseEntity<>("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
+        if (!colocacionService.existById(id)) {
+            return new ResponseEntity<>("No existe la TELA", HttpStatus.NOT_FOUND);
+        }
+        if (editar.getPrecio() == null) {
+            return new ResponseEntity<>("El PRECIO no puede ser nulo", HttpStatus.BAD_REQUEST);
+        }
 
         Colocacion colocacion = colocacionService.getColoc(id);
 
@@ -72,33 +75,35 @@ public class ColocacionControler {
         colocacion.setPrecio(editar.getPrecio());
 
         colocacionService.save(colocacion);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Colocación actualizada con éxito", HttpStatus.OK);
     }
 
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
-        if (!colocacionService.existById(id))
+        if (!colocacionService.existById(id)) {
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
+        }
         colocacionService.delete(id);
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);
     }
 
     @PostMapping("/varios")
     @Transactional
-    public ResponseEntity<List<Colocacion>> saveDataEntries(@RequestBody List<Colocacion> dataEntries) {
-        List<Colocacion> colocacioness = dataEntries.stream()
+    public ResponseEntity<List<Colocacion>> guardarVarios(@RequestBody List<Colocacion> dataEntries) {
+        List<Colocacion> colocaciones = dataEntries.stream()
                 .map(colocacionService::saveVarios)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(colocacioness);
+        return ResponseEntity.ok(colocaciones);
     }
 
     @PutMapping("masivo")
     @Transactional
     public ResponseEntity<?> incrementarPrecios(@RequestParam double porcentaje) {
         List<ColocacionDto> list = colocacionService.getColocsDto();
-        if (list.isEmpty())
-            return new ResponseEntity("No hay TELAS cargadas", HttpStatus.BAD_REQUEST);
+        if (list.isEmpty()) {
+            return new ResponseEntity<>("No hay TELAS cargadas", HttpStatus.BAD_REQUEST);
+        }
         colocacionService.incrementarPrecios(porcentaje);
         return new ResponseEntity<>("Modificación MASIVA exitosa", HttpStatus.OK);
     }

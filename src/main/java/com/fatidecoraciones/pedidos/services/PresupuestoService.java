@@ -48,8 +48,13 @@ public class PresupuestoService extends QueryService<Presupuesto> {
         presupuestoRepository.deleteById(id);
     }
 
-    public boolean comparar (List<Presupuesto> presupuestos, Sistema sistema) {
+    public boolean comparaSistema (List<Presupuesto> presupuestos, Sistema sistema) {
         return presupuestos.stream().allMatch(p -> p.getSistema().equals(sistema));
+    }
+
+    public boolean compararCliente (List<Presupuesto> presupuestos) {
+        String cliente = presupuestos.get(0).getClienteNombre();
+        return presupuestos.stream().allMatch(p -> p.getClienteNombre().equals(cliente));
     }
 
     public List<Presupuesto> findByCriteria(PresupuestoCriteria presupuestoCriteria) {

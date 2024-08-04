@@ -29,8 +29,9 @@ public class RoyalCortController {
     @GetMapping("/lista/total")
     public ResponseEntity<List<RoyalCortDto>> lista() {
         List<RoyalCortDto> list = royalCortService.getRCsDto();
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -44,8 +45,9 @@ public class RoyalCortController {
         }
 
         List<RoyalCortDto> list = royalCortService.getSistemas(sistemaEnum);
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return new ResponseEntity<>("No hay SISTEMAS cargados", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -59,8 +61,9 @@ public class RoyalCortController {
         }
 
         List<RoyalCortDto> list = royalCortService.getTelas(telasEnum);
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return new ResponseEntity<>("No hay TELAS cargadas", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -152,14 +155,14 @@ public class RoyalCortController {
         precioSist = sist / 100;
         Double total = precioTela + precioSist;
 
-        System.out.println("sistema: " + precioSist / ancho * 100);
-        System.out.println("Precio sistema: " + precioSist);
-        System.out.println("Ancho: " + ancho);
-        System.out.println("Alto: " + alto);
-        System.out.println("Tela: " + tela.getTela() + " $" + tela.getPrecio());
-        System.out.println("Precio tela: " + precioTela);
-        System.out.println("Total: " + total);
-        System.out.println("-------------------------");
+//        System.out.println("sistema: " + precioSist / ancho * 100);
+//        System.out.println("Precio sistema: " + precioSist);
+//        System.out.println("Ancho: " + ancho);
+//        System.out.println("Alto: " + alto);
+//        System.out.println("Tela: " + tela.getTela() + " $" + tela.getPrecio());
+//        System.out.println("Precio tela: " + precioTela);
+//        System.out.println("Total: " + total);
+//        System.out.println("-------------------------");
 
         return new ResponseEntity<>(total, HttpStatus.OK);
 
@@ -176,10 +179,12 @@ public class RoyalCortController {
     @Transactional
     public ResponseEntity<?> nuevo(@RequestBody RoyalCortDto nuevo) {
 
-        if (StringUtils.isBlank(nuevo.getTela()))
+        if (StringUtils.isBlank(nuevo.getTela())) {
             return new ResponseEntity<>("Falta el nombre de la TELA", HttpStatus.BAD_REQUEST);
-        if (nuevo.getPrecio() == null)
+        }
+        if (nuevo.getPrecio() == null) {
             return new ResponseEntity<>("Falta el PRECIO", HttpStatus.BAD_REQUEST);
+        }
 
         RoyalCort royalCort = new RoyalCort(
 
@@ -205,10 +210,12 @@ public class RoyalCortController {
     @Transactional
     public ResponseEntity<?> editar(@PathVariable("id") Long id, @RequestBody RoyalCortDto editar) {
 
-        if (!royalCortService.existById(id))
+        if (!royalCortService.existById(id)) {
             return new ResponseEntity<>("No existe la TELA", HttpStatus.BAD_REQUEST);
-        if (editar.getPrecio() == null)
+        }
+        if (editar.getPrecio() == null) {
             return new ResponseEntity<>("El MONTO de puede ser 0", HttpStatus.BAD_REQUEST);
+        }
 
         RoyalCort royalCort = royalCortService.getRC(id);
 
@@ -225,8 +232,9 @@ public class RoyalCortController {
     @Transactional
     public ResponseEntity<?> incrementarPrecios(@RequestParam double porcentaje) {
         List<RoyalCortDto> list = royalCortService.getRCsDto();
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return new ResponseEntity("No hay TELAS cargadas", HttpStatus.BAD_REQUEST);
+        }
         royalCortService.incrementarPrecios(porcentaje);
         return new ResponseEntity<>("Modificación MASIVA exitosa", HttpStatus.OK);
     }
@@ -234,8 +242,9 @@ public class RoyalCortController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable("id") Long id) {
-        if (!royalCortService.existById(id))
+        if (!royalCortService.existById(id)) {
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
+        }
         royalCortService.delete(id);
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);
     }

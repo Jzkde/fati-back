@@ -1,6 +1,5 @@
 package com.fatidecoraciones.pedidos.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
 import com.fatidecoraciones.pedidos.enums.Sistema;
@@ -8,9 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Presupuesto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +28,12 @@ public class Presupuesto {
     private String ambiente;
     private String observaciones;
     private String clienteNombre;
+    private LocalDate fecha;
 
     public Presupuesto() {
     }
 
-    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones, String clienteNombre) {
+    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones, String clienteNombre, LocalDate fecha) {
         this.sistema = sistema;
         this.ancho = ancho;
         this.alto = alto;
@@ -41,5 +43,6 @@ public class Presupuesto {
         this.ambiente = ambiente;
         this.observaciones = observaciones;
         this.clienteNombre = clienteNombre;
+        this.fecha = fecha;
     }
 }

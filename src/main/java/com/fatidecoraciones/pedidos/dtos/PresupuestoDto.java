@@ -7,6 +7,8 @@ import com.fatidecoraciones.pedidos.models.Presupuesto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 public class PresupuestoDto {
@@ -21,6 +23,7 @@ public class PresupuestoDto {
     private String ambiente;
     private String observaciones;
     private String clienteNombre;
+    private LocalDate fecha;
 
     public PresupuestoDto() {
     }
@@ -36,5 +39,6 @@ public class PresupuestoDto {
         this.ambiente = presupuesto.getAmbiente();
         this.observaciones = presupuesto.getObservaciones();
         this.clienteNombre = presupuesto.getClienteNombre();
+        this.fecha= presupuesto.getFecha();
     }
 }

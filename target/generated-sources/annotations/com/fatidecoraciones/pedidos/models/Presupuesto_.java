@@ -3,6 +3,7 @@ package com.fatidecoraciones.pedidos.models;
 import com.fatidecoraciones.pedidos.enums.Apertura;
 import com.fatidecoraciones.pedidos.enums.Comando;
 import com.fatidecoraciones.pedidos.enums.Sistema;
+import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
@@ -12,6 +13,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 public abstract class Presupuesto_ {
 
 	public static volatile SingularAttribute<Presupuesto, String> clienteNombre;
+	public static volatile SingularAttribute<Presupuesto, LocalDate> fecha;
 	public static volatile SingularAttribute<Presupuesto, Sistema> sistema;
 	public static volatile SingularAttribute<Presupuesto, String> ambiente;
 	public static volatile SingularAttribute<Presupuesto, Integer> ancho;
@@ -23,6 +25,7 @@ public abstract class Presupuesto_ {
 	public static volatile SingularAttribute<Presupuesto, Apertura> apertura;
 
 	public static final String CLIENTE_NOMBRE = "clienteNombre";
+	public static final String FECHA = "fecha";
 	public static final String SISTEMA = "sistema";
 	public static final String AMBIENTE = "ambiente";
 	public static final String ANCHO = "ancho";
