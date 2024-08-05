@@ -24,13 +24,15 @@ public class BusquedaDto {
     private String responsable;
     private String tela;
     private String sistema;
+    private String viejo;
+    private String comprado;
 
     public BusquedaDto() {
     }
 
     public BusquedaDto(Long id, LocalDate fecha_pedidoDesde, LocalDate fecha_pedidoHasta, String provedor, String via,
                        String n_pedido, String n_factura, String n_remito, String llego, LocalDate fecha_llegada,
-                       String estado, String clienteNombre, String responsable, String tela, String sistema) {
+                       String estado, String clienteNombre, String responsable, String tela, String sistema, String viejo, String comprado) {
         this.id = id;
         this.fecha_pedidoDesde = fecha_pedidoDesde;
         this.fecha_pedidoHasta = fecha_pedidoHasta;
@@ -46,6 +48,8 @@ public class BusquedaDto {
         this.responsable = responsable;
         this.tela = tela;
         this.sistema = sistema;
+        this.viejo = viejo;
+        this.comprado = comprado;
     }
 
 }

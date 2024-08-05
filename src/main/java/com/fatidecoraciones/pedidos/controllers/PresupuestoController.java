@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.service.filter.BooleanFilter;
 import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
@@ -73,8 +74,10 @@ public class PresupuestoController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    @Transactional
     @PostMapping("/filtro")
     public ResponseEntity<List<Presupuesto>> filtro(@RequestBody BusquedaDto busquedaDto) {
+        presupuestoService.actualizarPresupuestosViejos();
         PresupuestoCriteria presupuestoCriteria = createCriteria(busquedaDto);
         List<Presupuesto> list = presupuestoService.findByCriteria(presupuestoCriteria);
         return new ResponseEntity<>(list, HttpStatus.OK);
@@ -126,7 +129,9 @@ public class PresupuestoController {
                     nuevo.getAmbiente(),
                     nuevo.getObservaciones(),
                     nuevo.getClienteNombre(),
-                    LocalDate.now());
+                    LocalDate.now(),
+                    false,
+                    false);
             presupuestoService.save(presupuesto);
         }
         if (nuevo.getSistema() == Sistema.TELA) {
@@ -141,13 +146,39 @@ public class PresupuestoController {
                     nuevo.getAmbiente(),
                     nuevo.getObservaciones(),
                     nuevo.getClienteNombre(),
-                    LocalDate.now());
+                    LocalDate.now(),
+                    false,
+                    false);
 
 
             presupuestoService.save(presupuesto);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/actualizar/{id}")
+    @Transactional
+    public ResponseEntity<?> actualizar(@PathVariable("id") Long id) {
+        if (!presupuestoService.existById(id)) {
+            return new ResponseEntity<>("No Existe", HttpStatus.NOT_FOUND);
+        }
+
+        Presupuesto presupuesto = presupuestoService.getPresupuesto(id);
+        if (presupuesto == null) {
+            return new ResponseEntity<>("Presupuesto no encontrado", HttpStatus.NOT_FOUND);
+        }
+
+        if (presupuesto.isComprado()) {
+            presupuesto.setComprado(false);
+        } else {
+            presupuesto.setComprado(true);
+        }
+
+        presupuestoService.save(presupuesto);
+
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+
 
     @PutMapping("/editar/{id}")
     @Transactional
@@ -187,6 +218,8 @@ public class PresupuestoController {
         presupuesto.setObservaciones(editar.getObservaciones());
         presupuesto.setClienteNombre(editar.getClienteNombre());
         presupuesto.setFecha(editar.getFecha());
+        presupuesto.setViejo(editar.isViejo());
+        presupuesto.setComprado(editar.isComprado());
 
         presupuestoService.save(presupuesto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -333,6 +366,26 @@ public class PresupuestoController {
                 StringFilter filter = new StringFilter();
                 filter.setContains(busqueda.getClienteNombre());
                 presupuestoCriteria.setClienteNombre(filter);
+            }
+            //Viejo
+            if (!StringUtils.isBlank(busqueda.getViejo())) {
+                BooleanFilter filter = new BooleanFilter();
+                if (busqueda.getViejo().equals("true")) {
+                    filter.setEquals(true);
+                } else {
+                    filter.setEquals(false);
+                }
+                presupuestoCriteria.setViejo(filter);
+            }
+            //Llego
+            if (!StringUtils.isBlank(busqueda.getComprado())) {
+                BooleanFilter filter = new BooleanFilter();
+                if (busqueda.getComprado().equals("true")) {
+                    filter.setEquals(true);
+                } else {
+                    filter.setEquals(false);
+                }
+                presupuestoCriteria.setComprado(filter);
             }
         }
         return presupuestoCriteria;

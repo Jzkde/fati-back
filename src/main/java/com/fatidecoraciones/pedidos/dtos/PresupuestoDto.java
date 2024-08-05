@@ -24,6 +24,8 @@ public class PresupuestoDto {
     private String observaciones;
     private String clienteNombre;
     private LocalDate fecha;
+    private boolean viejo;
+    private boolean comprado;
 
     public PresupuestoDto() {
     }
@@ -39,6 +41,8 @@ public class PresupuestoDto {
         this.ambiente = presupuesto.getAmbiente();
         this.observaciones = presupuesto.getObservaciones();
         this.clienteNombre = presupuesto.getClienteNombre();
-        this.fecha= presupuesto.getFecha();
+        this.fecha = presupuesto.getFecha();
+        this.viejo = presupuesto.isViejo();
+        this.comprado = presupuesto.isComprado();
     }
 }

@@ -29,11 +29,12 @@ public class Presupuesto {
     private String observaciones;
     private String clienteNombre;
     private LocalDate fecha;
-
+    private boolean viejo;
+    private boolean comprado;
     public Presupuesto() {
     }
 
-    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones, String clienteNombre, LocalDate fecha) {
+    public Presupuesto(Sistema sistema, int ancho, int alto, Comando comando, Apertura apertura, String accesorios, String ambiente, String observaciones, String clienteNombre, LocalDate fecha, boolean viejo, boolean comprado) {
         this.sistema = sistema;
         this.ancho = ancho;
         this.alto = alto;
@@ -44,5 +45,7 @@ public class Presupuesto {
         this.observaciones = observaciones;
         this.clienteNombre = clienteNombre;
         this.fecha = fecha;
+        this.viejo = viejo;
+        this. comprado = comprado;
     }
 }

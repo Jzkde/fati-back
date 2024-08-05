@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,13 +49,25 @@ public class PresupuestoService extends QueryService<Presupuesto> {
         presupuestoRepository.deleteById(id);
     }
 
-    public boolean comparaSistema (List<Presupuesto> presupuestos, Sistema sistema) {
+    public boolean comparaSistema(List<Presupuesto> presupuestos, Sistema sistema) {
         return presupuestos.stream().allMatch(p -> p.getSistema().equals(sistema));
     }
 
-    public boolean compararCliente (List<Presupuesto> presupuestos) {
+    public boolean compararCliente(List<Presupuesto> presupuestos) {
         String cliente = presupuestos.get(0).getClienteNombre();
         return presupuestos.stream().allMatch(p -> p.getClienteNombre().equals(cliente));
+    }
+
+    public void actualizarPresupuestosViejos() {
+        LocalDate hoy = LocalDate.now();
+        List<Presupuesto> presupuestos = presupuestoRepository.findAll();
+
+        for (Presupuesto presupuesto : presupuestos) {
+            if (presupuesto.getFecha() != null && presupuesto.getFecha().plusDays(365).isBefore(hoy)) {
+                presupuesto.setViejo(true);
+                presupuestoRepository.save(presupuesto);
+            }
+        }
     }
 
     public List<Presupuesto> findByCriteria(PresupuestoCriteria presupuestoCriteria) {
@@ -69,10 +82,15 @@ public class PresupuestoService extends QueryService<Presupuesto> {
             if (presupuestoCriteria.getClienteNombre() != null) {
                 specification = specification.and(buildStringSpecification(presupuestoCriteria.getClienteNombre(), Presupuesto_.clienteNombre));
             }
+            if (presupuestoCriteria.getViejo() != null) {
+                specification = specification.and(buildSpecification(presupuestoCriteria.getViejo(), Presupuesto_.viejo));
+            }
+            if (presupuestoCriteria.getComprado() != null) {
+                specification = specification.and(buildSpecification(presupuestoCriteria.getComprado(), Presupuesto_.comprado));
+            }
         }
         return specification;
     }
-
 }
 
 

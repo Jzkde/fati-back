@@ -1,25 +1,8 @@
 package com.fatidecoraciones.pedidos;
 
-import com.fatidecoraciones.pedidos.enums.Apertura;
-import com.fatidecoraciones.pedidos.enums.Comando;
-import com.fatidecoraciones.pedidos.enums.Estado;
-import com.fatidecoraciones.pedidos.enums.Sistema;
-import com.fatidecoraciones.pedidos.models.Flex;
-import com.fatidecoraciones.pedidos.models.Pedido;
-import com.fatidecoraciones.pedidos.models.Presupuesto;
-import com.fatidecoraciones.pedidos.repositories.FlexRepository;
-import com.fatidecoraciones.pedidos.repositories.PedidoRepository;
-import com.fatidecoraciones.pedidos.repositories.PresupuestoRepository;
-import com.fatidecoraciones.pedidos.services.FlexService;
-import com.fatidecoraciones.pedidos.services.PedidoService;
-import com.fatidecoraciones.pedidos.services.PresupuestoService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-
-import java.time.LocalDate;
 
 @SpringBootApplication
 public class PedidosApplication extends SpringBootServletInitializer {
