@@ -98,6 +98,7 @@ public class CortEspecialesController {
 
         List<CortEspecialesDto> listaDto = lista.stream().map(c -> {
             CortEspecialesDto dto = new CortEspecialesDto();
+            dto.setId(c.getId());
             dto.setTela(c.getTela());
             dto.setPrecio(c.getPrecio());
             dto.setEsTela(c.isEsTela());

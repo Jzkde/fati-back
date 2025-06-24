@@ -11,7 +11,6 @@ com\fatidecoraciones\FatiDeco\controllers\CotrizadorController.class
 com\fatidecoraciones\FatiDeco\repositories\ServicioRepository.class
 com\fatidecoraciones\FatiDeco\services\DBService.class
 com\fatidecoraciones\FatiDeco\enums\Serv.class
-com\fatidecoraciones\FatiDeco\reportes\ReporteSistemas.class
 com\fatidecoraciones\FatiDeco\dB\CortEspecialesDataInitializer.class
 com\fatidecoraciones\FatiDeco\services\ServicioService.class
 com\fatidecoraciones\FatiDeco\dtos\SistemaDto.class
@@ -44,7 +43,6 @@ com\fatidecoraciones\FatiDeco\criteria\PedidoCriteria.class
 com\fatidecoraciones\FatiDeco\models\CortEspeciales_.class
 com\fatidecoraciones\FatiDeco\enums\Comando.class
 com\fatidecoraciones\FatiDeco\enums\Estado.class
-com\fatidecoraciones\FatiDeco\reportes\ReporteSistemas$1.class
 com\fatidecoraciones\FatiDeco\services\MarcaService.class
 com\fatidecoraciones\FatiDeco\controllers\ServicioController.class
 com\fatidecoraciones\FatiDeco\services\PedidoService.class
@@ -73,7 +71,6 @@ com\fatidecoraciones\FatiDeco\dtos\ClienteDto.class
 com\fatidecoraciones\FatiDeco\dtos\ProductoDto.class
 com\fatidecoraciones\FatiDeco\dtos\ResultadoDto.class
 com\fatidecoraciones\FatiDeco\models\CortEspeciales.class
-com\fatidecoraciones\FatiDeco\reportes\ReporteTelas.class
 com\fatidecoraciones\FatiDeco\services\CortEspecialesService.class
 com\fatidecoraciones\FatiDeco\controllers\ProductoController.class
 com\fatidecoraciones\FatiDeco\criteria\MedidaCriteria.class

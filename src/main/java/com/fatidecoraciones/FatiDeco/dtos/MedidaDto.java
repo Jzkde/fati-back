@@ -46,4 +46,12 @@ public class MedidaDto {
         this.cliente = medida.getCliente() != null ? medida.getCliente().getNombre() : "Desconocido";
         this.sistema = medida.getSistema() != null ? medida.getSistema().getSistema() : null;
     }
+    public String getComandoStr() {
+        return comando != null ? comando.name() : "";
+    }
+
+    public String getAperturaStr() {
+        return apertura != null ? apertura.name() : "";
+    }
+
 }

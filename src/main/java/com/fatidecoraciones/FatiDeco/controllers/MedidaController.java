@@ -8,21 +8,14 @@ import com.fatidecoraciones.FatiDeco.enums.Comando;
 import com.fatidecoraciones.FatiDeco.models.Cliente;
 import com.fatidecoraciones.FatiDeco.models.Medida;
 import com.fatidecoraciones.FatiDeco.models.Sistema;
-import com.fatidecoraciones.FatiDeco.reportes.ReporteSistemas;
-import com.fatidecoraciones.FatiDeco.reportes.ReporteTelas;
 import com.fatidecoraciones.FatiDeco.services.ClienteService;
 import com.fatidecoraciones.FatiDeco.services.MedidaService;
 import com.fatidecoraciones.FatiDeco.services.SistemaService;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,6 +28,7 @@ import tech.jhipster.service.filter.StringFilter;
 import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -229,66 +223,77 @@ public class MedidaController {
         return new ResponseEntity<>("Medidas cargardas: " + medida.getId(), HttpStatus.OK);
     }
 
-
     @PostMapping("/pdf")
-    public ResponseEntity<?> generarPdf(@RequestBody List<MedidaDto> medidas,
-                                        @RequestParam String tel,
-                                        @RequestParam String direcc) {
+    public ResponseEntity<?> generarPdfJasper(@RequestBody List<MedidaDto> medidas,
+                                              @RequestParam String tel,
+                                              @RequestParam String direcc) {
+
+        Cliente cliente1 = clienteService.findByNombre(medidas.get(0).getCliente());
+
+        if (cliente1 == null) {
+            Cliente clienteN = new Cliente(
+                    medidas.get(0).getCliente(),
+                    direcc,
+                    tel
+            );
+            clienteService.save(clienteN);
+        } else {
+            cliente1.setDireccion(direcc);
+            cliente1.setTelefono(tel);
+
+            clienteService.save(cliente1);
+        }
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            Map<String, List<MedidaDto>> presupuestosPorSistema = medidas.stream()
+
+            // Verificar que todos los clientes sean iguales
+            String clienteReferencia = medidas.get(0).getCliente();
+            boolean clientesIguales = medidas.stream().allMatch(m -> m.getCliente().equalsIgnoreCase(clienteReferencia));
+            if (!clientesIguales) {
+                return new ResponseEntity<>("Los clientes no coinciden.", HttpStatus.BAD_REQUEST);
+            }
+
+
+            Map<String, List<MedidaDto>> medidasPorSistema = medidas.stream()
                     .peek(m -> m.setSistema(m.getSistema().toUpperCase()))
                     .collect(Collectors.groupingBy(MedidaDto::getSistema));
 
-            Set<String> sistemas = presupuestosPorSistema.keySet();
+            if (medidasPorSistema.size() == 1) {
+                String sistema = medidasPorSistema.keySet().iterator().next();
+                byte[] pdf = generarPdfConJasper(sistema, medidasPorSistema.get(sistema), tel, direcc);
 
-            // Si hay un solo tipo de Sistema genera solo un PDF
-            if (sistemas.size() == 1) {
-                String sistema = sistemas.iterator().next();
-                Optional<byte[]> pdfBytesOpt = pdfSegunSistema(sistema.toUpperCase(), presupuestosPorSistema.get(sistema), tel, direcc);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                headers.setContentDispositionFormData("attachment", "presupuesto_" + sistema.toLowerCase() + ".pdf");
+                headers.setContentLength(pdf.length);
 
-                if (pdfBytesOpt.isPresent()) {
-                    byte[] pdfBytes = pdfBytesOpt.get();
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.setContentType(MediaType.APPLICATION_PDF);
-                    headers.setContentDispositionFormData("attachment", "presupuesto_" + sistema.toLowerCase() + ".pdf");
-                    headers.setContentLength(pdfBytes.length);
-
-                    return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("Los clientes no coinciden.", HttpStatus.BAD_REQUEST);
-                }
+                return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
             } else {
-                // Si hay dos o más tipos de Sistema genera un ZIP con los PDFs correspondientes
                 try (ZipOutputStream zipOut = new ZipOutputStream(baos)) {
-                    for (Map.Entry<String, List<MedidaDto>> entry : presupuestosPorSistema.entrySet()) {
-
+                    for (Map.Entry<String, List<MedidaDto>> entry : medidasPorSistema.entrySet()) {
                         String sistema = entry.getKey();
-                        Optional<byte[]> pdfBytesOpt = pdfSegunSistema(sistema.toUpperCase(), entry.getValue(), tel, direcc);
+                        byte[] pdf = generarPdfConJasper(sistema, entry.getValue(), tel, direcc);
 
-                        if (pdfBytesOpt.isPresent()) {
-                            byte[] pdfBytes = pdfBytesOpt.get();
-                            ZipEntry zipEntry = new ZipEntry("presupuesto_" + sistema.toLowerCase() + ".pdf");
-                            zipOut.putNextEntry(zipEntry);
-                            zipOut.write(pdfBytes);
-                            zipOut.closeEntry();
-                        } else {
-                            return new ResponseEntity<>("Los clientes no coinciden.", HttpStatus.BAD_REQUEST);
-                        }
+                        ZipEntry zipEntry = new ZipEntry("presupuesto_" + sistema.toLowerCase() + ".pdf");
+                        zipOut.putNextEntry(zipEntry);
+                        zipOut.write(pdf);
+                        zipOut.closeEntry();
                     }
                 }
+
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
                 headers.setContentDispositionFormData("attachment", "presupuestos.zip");
                 headers.setContentLength(baos.size());
-                System.out.println("ZIP");
+
                 return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
             }
-        } catch (IOException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error al generar el PDF", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PostMapping("/sync")
     @Transactional
@@ -451,7 +456,6 @@ public class MedidaController {
         }
 
         medidaService.save(medida);
-
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -462,92 +466,6 @@ public class MedidaController {
             return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
         medidaService.delete(id);
         return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
-    }
-
-    private Optional<byte[]> pdfSegunSistema(String sistema, List<MedidaDto> medidas, String tel, String direcc) throws IOException {
-        // Crea el documento
-        ByteArrayOutputStream pdfBaos = new ByteArrayOutputStream();
-        PdfWriter writer = new PdfWriter(pdfBaos);
-        PdfDocument pdfDocument = new PdfDocument(writer);
-
-        PageSize pageSize;
-        if (sistema.equalsIgnoreCase("TELA")) {
-            pageSize = new PageSize(PageSize.A4.getHeight() / 2, PageSize.A4.getWidth());
-        } else {
-            pageSize = new PageSize(PageSize.A4.getWidth(), PageSize.A4.getHeight());
-        }
-
-        pdfDocument.setDefaultPageSize(pageSize);
-        Document document = new Document(pdfDocument, pageSize);
-
-        if (agregarContenido(document, sistema, medidas, tel, direcc)) {
-            document.close();
-            return Optional.of(pdfBaos.toByteArray());
-        } else {
-            document.close();
-            return Optional.empty();
-        }
-    }
-
-    private boolean agregarContenido(Document document, String sistema, List<MedidaDto> medidas, String tel, String direcc) {
-
-        Cliente cliente1 = clienteService.findByNombre(medidas.get(0).getCliente());
-
-        if (cliente1 == null) {
-            Cliente clienteN = new Cliente(
-                    medidas.get(0).getCliente(),
-                    direcc,
-                    tel
-            );
-            clienteService.save(clienteN);
-        } else {
-            cliente1.setDireccion(direcc);
-            cliente1.setTelefono(tel);
-
-            clienteService.save(cliente1);
-        }
-        boolean cliente = medidaService.compararCliente(medidas);
-        if (!cliente) {
-            return false;
-        }
-
-        // Encabezado
-        Paragraph titulo = new Paragraph("FATI Decoraciones")
-                .setUnderline()
-                .setItalic()
-                .setTextAlignment(TextAlignment.CENTER)
-                .setFontSize(16);
-        document.add(titulo);
-
-        Paragraph espacio = new Paragraph("").setFontSize(16);
-//        document.add(espacio);
-
-        float[] columnWidths = {45, 10, 45};
-        Table table = new Table(UnitValue.createPercentArray(columnWidths));
-        table.setWidth(UnitValue.createPercentValue(100));
-
-        table.addCell(new Cell().add(new Paragraph("Cliente: " + medidas.get(0).getCliente()).setUnderline()).setFontSize(10).setBorder(Border.NO_BORDER));
-        table.addCell(new Cell().add(new Paragraph("")).setFontSize(10).setBorder(Border.NO_BORDER));
-        table.addCell(new Cell().add(new Paragraph("Telefono: " + tel).setUnderline()).setFontSize(10).setBorder(Border.NO_BORDER));
-
-        Cell direccion = new Cell(1, 3).add(new Paragraph("Domicilio: " + direcc)
-                .setFontSize(10)
-                .setBorder(Border.NO_BORDER));
-        table.addCell(direccion.setUnderline().setBorder(Border.NO_BORDER));
-
-        document.add(table);
-
-        Paragraph sist = new Paragraph("Sistema: " + sistema).setUnderline().setFontSize(12);
-        document.add(sist);
-
-        // Tablas según Sistema
-        if (sistema.equalsIgnoreCase("TELA")) {
-            ReporteTelas.repoTelas(document, medidas);
-        } else {
-            ReporteSistemas.repoSistemas(document, medidas, sistema);
-        }
-
-        return true;
     }
 
     private MedidaCriteria createCriteria(BusquedaDto busqueda) {
@@ -583,4 +501,36 @@ public class MedidaController {
         }
         return medidaCriteria;
     }
+
+    public byte[] generarPdfConJasper(String sistema, List<MedidaDto> medidas, String telefono, String direccion) throws JRException, IOException {
+        // Seleccionar el reporte según el sistema
+        String jasperPath = sistema.equalsIgnoreCase("TELA")
+                ? "/presupuesto_tela.jasper"
+                : "/presupuesto_sistema.jasper";
+
+        InputStream jasperStream = getClass().getResourceAsStream(jasperPath);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("CLIENTE", medidas.get(0).getCliente());
+        params.put("DIRECCION", direccion);
+        params.put("TELEFONO", telefono);
+        params.put("SISTEMA", sistema);
+
+        StringBuilder obsBuilder = new StringBuilder();
+        int index = 1;
+        for (MedidaDto m : medidas) {
+            if (m.getObservaciones() != null && !m.getObservaciones().isEmpty()) {
+                obsBuilder.append("Obs ").append(index).append(": ").append(m.getObservaciones()).append(" - ");
+            }
+            index++;
+        }
+        params.put("OBSERVACIONES", obsBuilder.toString());
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(medidas);
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperStream, params, dataSource);
+
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
 }

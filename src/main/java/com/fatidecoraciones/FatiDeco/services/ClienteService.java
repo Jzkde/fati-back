@@ -20,7 +20,7 @@ public class ClienteService {
     }
 
     public Cliente findByNombre(String nombre) {
-        return clienteRepository.findByNombreIgnoreCase(nombre);
+        return clienteRepository.findByNombreIgnoreCase(nombre.trim());
     }
 
     public ClienteDto findByNombreDto(String nombre) {
