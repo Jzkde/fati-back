@@ -81,8 +81,8 @@ public class MedidaController {
             medidaDto.setId(medida.getId());
             medidaDto.setAncho(medida.getAncho());
             medidaDto.setAlto(medida.getAlto());
-            medidaDto.setComando(medida.getComando());
-            medidaDto.setApertura(medida.getApertura());
+            medidaDto.setComando(medida.getComando().toString());
+            medidaDto.setApertura(medida.getApertura().toString());
             medidaDto.setAccesorios(medida.getAccesorios());
             medidaDto.setAmbiente(medida.getAmbiente());
             medidaDto.setObservaciones(medida.getObservaciones());
@@ -136,19 +136,19 @@ public class MedidaController {
 
         if (sistemasValidos.contains(nuevo.getSistema().toUpperCase())) {
 
-            if (nuevo.getComando() == Comando.NO_POSEE || nuevo.getApertura() != Apertura.NO_POSEE) {
+            if (nuevo.getComando().equalsIgnoreCase("NO_POSEE") || !nuevo.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("Este SISTEMA requiere COMANDO y NO debe tener APERTURA", HttpStatus.BAD_REQUEST);
             }
 
-        } else if (nuevo.getSistema() == "VERTICALES") {
+        } else if (nuevo.getSistema().equalsIgnoreCase("VERTICALES") ){
 
-            if (nuevo.getComando() == Comando.NO_POSEE || nuevo.getApertura() == Apertura.NO_POSEE) {
+            if (nuevo.getComando().equalsIgnoreCase("NO_POSEE") || nuevo.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("VERTICALES requiere COMANDO y APERTURA", HttpStatus.BAD_REQUEST);
             }
 
-        } else if (nuevo.getSistema() == "TELA") {
+        } else if (nuevo.getSistema().equalsIgnoreCase("TELA") ) {
 
-            if (nuevo.getComando() != Comando.NO_POSEE || nuevo.getApertura() == Apertura.NO_POSEE) {
+            if (!nuevo.getComando().equalsIgnoreCase("NO_POSEE") || nuevo.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("TELA no debe tener COMANDO y debe tener APERTURA", HttpStatus.BAD_REQUEST);
             }
 
@@ -164,7 +164,7 @@ public class MedidaController {
 
                     nuevo.getAncho(),
                     nuevo.getAlto(),
-                    nuevo.getComando(),
+                    Comando.valueOf(nuevo.getComando()),
                     Apertura.NO_POSEE,
                     nuevo.getAccesorios(),
                     nuevo.getAmbiente(),
@@ -181,8 +181,8 @@ public class MedidaController {
 
                     nuevo.getAncho(),
                     nuevo.getAlto(),
-                    nuevo.getComando(),
-                    nuevo.getApertura(),
+                    Comando.valueOf(nuevo.getComando()),
+                    Apertura.valueOf(nuevo.getComando()),
                     nuevo.getAccesorios(),
                     nuevo.getAmbiente(),
                     nuevo.getObservaciones(),
@@ -200,7 +200,7 @@ public class MedidaController {
                     nuevo.getAncho(),
                     nuevo.getAlto(),
                     Comando.NO_POSEE,
-                    nuevo.getApertura(),
+                    Apertura.valueOf(nuevo.getComando()),
                     nuevo.getAccesorios(),
                     nuevo.getAmbiente(),
                     nuevo.getObservaciones(),
@@ -318,8 +318,8 @@ public class MedidaController {
                 Medida nuevo = new Medida(
                         dto.getAncho(),
                         dto.getAlto(),
-                        dto.getComando(),
-                        dto.getApertura(),
+                        Comando.valueOf(dto.getComando()),
+                        Apertura.valueOf(dto.getApertura()),
                         dto.getAccesorios(),
                         dto.getAmbiente(),
                         dto.getObservaciones(),
@@ -374,19 +374,19 @@ public class MedidaController {
                 "ROMANA".equals(editar.getSistema()) ||
                 "ZEBRA".equals(editar.getSistema())) {
 
-            if (editar.getComando() == Comando.NO_POSEE || editar.getApertura() != Apertura.NO_POSEE) {
+            if (editar.getComando().equalsIgnoreCase("NO_POSEE") || !editar.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("Este SISTEMA requiere COMANDO y NO debe tener APERTURA", HttpStatus.BAD_REQUEST);
             }
 
         } else if ("VERTICALES".equals(editar.getSistema())) {
 
-            if (editar.getComando() == Comando.NO_POSEE || editar.getApertura() == Apertura.NO_POSEE) {
+            if (editar.getComando().equalsIgnoreCase("NO_POSEE") || editar.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("VERTICALES requiere COMANDO y APERTURA", HttpStatus.BAD_REQUEST);
             }
 
         } else if ("TELA".equals(editar.getSistema())) {
 
-            if (editar.getComando() != Comando.NO_POSEE || editar.getApertura() == Apertura.NO_POSEE) {
+            if (!editar.getComando().equalsIgnoreCase("NO_POSEE") || editar.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("TELA no debe tener COMANDO y debe tener APERTURA", HttpStatus.BAD_REQUEST);
             }
 
@@ -419,8 +419,8 @@ public class MedidaController {
         medida.setClienteNombre(editar.getCliente());
         medida.setAncho(editar.getAncho());
         medida.setAlto(editar.getAlto());
-        medida.setComando(editar.getComando());
-        medida.setApertura(editar.getApertura());
+        medida.setComando(Comando.valueOf(editar.getComando()));
+        medida.setApertura(Apertura.valueOf(editar.getApertura()));
         medida.setAccesorios(editar.getAccesorios());
         medida.setAmbiente(editar.getAmbiente());
         medida.setObservaciones(editar.getObservaciones());

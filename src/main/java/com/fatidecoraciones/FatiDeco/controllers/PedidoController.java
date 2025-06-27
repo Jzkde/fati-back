@@ -8,7 +8,6 @@ import com.fatidecoraciones.FatiDeco.enums.Estado;
 import com.fatidecoraciones.FatiDeco.models.Pedido;
 import com.fatidecoraciones.FatiDeco.services.PedidoService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -98,28 +97,25 @@ public class PedidoController {
 
     @PutMapping("/actualizar/{id}")
     @Transactional
-    public ResponseEntity<String> actualizar(@PathVariable Long id,
-                                             @RequestParam String llego) {
+    public ResponseEntity<String> actualizar(@PathVariable Long id) {
+
         if (!pedidoService.existById(id)) {
             return new ResponseEntity<>("El PEDIDO no Existe", HttpStatus.NOT_FOUND);
         }
-        if (llego.equals("true") || llego.equals("false")) {
-            Pedido pedido = pedidoService.getPedido(id);
-            if (llego.equals("true")) {
-                pedido.setLlego(true);
-                pedido.setFecha_llegada(LocalDate.now());
-                pedido.setEstado(Estado.LLEGO);
-                pedidoService.save(pedido);
-                return new ResponseEntity<>("El PEDIDO LLEGO", HttpStatus.OK);
-            } else {
-                pedido.setLlego(false);
-                pedido.setFecha_llegada(null);
-                pedido.setEstado(Estado.PEDIDO);
-                pedidoService.save(pedido);
-                return new ResponseEntity<>("El PEDIDO NO Llego", HttpStatus.OK);
-            }
+        Pedido pedido = pedidoService.getPedido(id);
+        if (!pedido.isLlego()) {
+            pedido.setLlego(true);
+            pedido.setFecha_llegada(LocalDate.now());
+            pedido.setEstado(Estado.LLEGO);
+            pedidoService.save(pedido);
+            return new ResponseEntity<>("El PEDIDO LLEGO", HttpStatus.OK);
+        } else {
+            pedido.setLlego(false);
+            pedido.setFecha_llegada(null);
+            pedido.setEstado(Estado.PEDIDO);
+            pedidoService.save(pedido);
+            return new ResponseEntity<>("El PEDIDO NO Llego", HttpStatus.OK);
         }
-        return new ResponseEntity<>("ERROR", HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/editar/{id}")

@@ -144,14 +144,18 @@ public class TallerController {
 
         Taller taller = tallerService.getTaller(id);
         if (!taller.getLlego()) {
+            taller.setLlego(true);
             taller.setFecha_entrega(LocalDate.now());
             taller.setEstado(Estado.ENTREGADO_COLOCADO);
-            taller.setLlego(true);
             tallerService.save(taller);
             return new ResponseEntity<>("La Cortina LLEGO", HttpStatus.OK);
+        } else {
+            taller.setLlego(false);
+            taller.setFecha_entrega(null);
+            taller.setEstado(Estado.PEDIDO);
+            tallerService.save(taller);
+            return new ResponseEntity<>("La Cortina NO LLEGO", HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/editar/{id}")
