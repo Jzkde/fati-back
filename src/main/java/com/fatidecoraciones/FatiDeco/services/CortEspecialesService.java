@@ -91,8 +91,8 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         return cortEspecialesRepository.existsByTelaIgnoreCaseAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(tela, sistema, marca);
     }
 
-    public CortEspeciales findByTelaAndSistema(String sistema, String tela) {
-        return cortEspecialesRepository.findByTelaAndSistema_SistemaIgnoreCase(tela, sistema).orElse(null);
+    public CortEspeciales findByTelaAndSistema(String tela, String sistema) {
+        return cortEspecialesRepository.findByTelaIgnoreCaseAndSistema_SistemaIgnoreCase(tela, sistema).orElse(null);
     }
 
     public List<CortEspecialesDto> getMecanismoXMarcaXSistema(String sistema, String marca, boolean adicional) {

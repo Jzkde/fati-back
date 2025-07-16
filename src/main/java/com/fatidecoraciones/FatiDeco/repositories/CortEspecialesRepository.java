@@ -32,7 +32,7 @@ public interface CortEspecialesRepository extends JpaRepository<CortEspeciales, 
 
     Optional<CortEspeciales> findByTelaAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(String tela, String sistema, String marca);
 
-    Optional<CortEspeciales> findByTelaAndSistema_SistemaIgnoreCase(String tela, String sistema);
+    Optional<CortEspeciales> findByTelaIgnoreCaseAndSistema_SistemaIgnoreCase(String tela, String sistema);
 
     @Modifying
     @Transactional

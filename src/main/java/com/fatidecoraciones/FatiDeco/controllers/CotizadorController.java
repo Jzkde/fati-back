@@ -43,7 +43,7 @@ public class CotizadorController {
         if (!cortEspecialesService.verificarMarca(marca)) {
             return new ResponseEntity<>("La MARCA no existe:" + marca, HttpStatus.NOT_FOUND);
         }
-        if (cortEspecialesService.findByTela(telaN) == null) {
+        if (cortEspecialesService.findByTelaAndSistema(telaN, sistemaN) == null) {
             return new ResponseEntity<>("La TELA no existe:" + telaN, HttpStatus.NOT_FOUND);
         }
         if (sistemaService.findBySistema(sistemaN) == null) {
@@ -51,7 +51,7 @@ public class CotizadorController {
         }
 
         Sistema sistema = sistemaService.findBySistema(sistemaN);
-        CortEspeciales tela = cortEspecialesService.findByTela(telaN);
+        CortEspeciales tela = cortEspecialesService.findByTelaAndSistema(telaN, sistemaN);
 
 
         if (!marca.equalsIgnoreCase(tela.getMarca().getMarca())) {
