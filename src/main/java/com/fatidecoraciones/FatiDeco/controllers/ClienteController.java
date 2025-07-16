@@ -1,5 +1,7 @@
 package com.fatidecoraciones.FatiDeco.controllers;
 
+import com.fatidecoraciones.FatiDeco.criteria.ClienteCriteria;
+import com.fatidecoraciones.FatiDeco.dtos.BusquedaDto;
 import com.fatidecoraciones.FatiDeco.dtos.ClienteDto;
 import com.fatidecoraciones.FatiDeco.models.Cliente;
 import com.fatidecoraciones.FatiDeco.services.ClienteService;
@@ -7,9 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("cliente")
@@ -23,21 +27,35 @@ public class ClienteController {
     }
 
     @GetMapping("/lista")
-    public ResponseEntity<List<ClienteDto>> lista() {
+    public ResponseEntity lista() {
         List<ClienteDto> list = clienteService.getClientesDto();
         if (list.isEmpty()) {
-            return new ResponseEntity("No hay PROVEEDORES cargados", HttpStatus.NO_CONTENT);
+            return new ResponseEntity("No hay PROVEEDORES cargados", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/buscar")
-    public ResponseEntity<ClienteDto> buscar(@RequestParam String clienteN) {
-        ClienteDto cliente = clienteService.findByNombreDto(clienteN.trim());
-        if (cliente == null) {
-            return new ResponseEntity("CLIENTE no encontrado", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(cliente, HttpStatus.OK);
+    @Transactional
+    @PostMapping("/buscar")
+    public ResponseEntity<List<ClienteDto>> filtro(@RequestBody BusquedaDto busquedaDto) {
+
+        ClienteCriteria clienteCriteria = createCriteria(busquedaDto);
+        List<Cliente> lista = clienteService.findByCriteria(clienteCriteria);
+
+        List<ClienteDto> listaDto = lista.stream().map(cliente -> {
+
+            ClienteDto clienteDto = new ClienteDto();
+
+            clienteDto.setId(cliente.getId());
+            clienteDto.setNombre(cliente.getNombre());
+            clienteDto.setDireccion(cliente.getDireccion());
+            clienteDto.setTelefono(cliente.getTelefono());
+
+            return clienteDto;
+
+        }).collect(Collectors.toList());
+
+        return new ResponseEntity<>(listaDto, HttpStatus.OK);
     }
 
     @GetMapping("/uno/{id}")
@@ -60,7 +78,7 @@ public class ClienteController {
         }
         Cliente clienteN = clienteService.findByNombre(nuevo.getNombre().trim());
         if (clienteN != null) {
-            return new ResponseEntity("El CLIENTE ya Existe", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("El CLIENTE ya Existe", HttpStatus.NOT_FOUND);
         }
 
         Cliente cliente = new Cliente(
@@ -78,7 +96,7 @@ public class ClienteController {
                                     @RequestBody ClienteDto editar) {
         Cliente clienteN = clienteService.findByNombre(editar.getNombre().trim());
         if (clienteN != null) {
-            return new ResponseEntity("El CLIENTE ya Existe", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("El CLIENTE ya Existe", HttpStatus.NOT_FOUND);
         }
 
         if (!clienteService.existById(id)) {
@@ -109,7 +127,7 @@ public class ClienteController {
         if (clienteService.tieneMedidas(id)) {
             return new ResponseEntity<>("No se puede eliminar el CLIENTE porque tiene MEDIDAS asociadas", HttpStatus.BAD_REQUEST);
         }
-        if (clienteService.tieneConfecciones(id)){
+        if (clienteService.tieneConfecciones(id)) {
             return new ResponseEntity<>("No se puede eliminar el CLIENTE porque tiene CONFECCIONES asociadas", HttpStatus.BAD_REQUEST);
         }
 
@@ -117,5 +135,18 @@ public class ClienteController {
         return new ResponseEntity<>("CLIENTE borrado", HttpStatus.OK);
     }
 
+    private ClienteCriteria createCriteria(BusquedaDto busqueda) {
+        ClienteCriteria clienteCriteria = new ClienteCriteria();
+        if (busqueda != null) {
 
+            //Cliente
+            if (!StringUtils.isBlank(busqueda.getCliente())) {
+                StringFilter filter = new StringFilter();
+                filter.setContains(busqueda.getCliente());
+                clienteCriteria.setNombre(filter);
+            }
+
+        }
+        return clienteCriteria;
+    }
 }

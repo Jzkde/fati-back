@@ -8,7 +8,6 @@ import com.fatidecoraciones.FatiDeco.models.Producto;
 import com.fatidecoraciones.FatiDeco.services.MarcaService;
 import com.fatidecoraciones.FatiDeco.services.ProductoService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +16,7 @@ import tech.jhipster.service.filter.StringFilter;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("prod")
@@ -64,10 +64,25 @@ public class ProductoController {
 
 
     @PostMapping("/filtro")
-    public ResponseEntity<List<Producto>> filtro(@RequestBody BusquedaDto busquedaDto) {
+    public ResponseEntity<List<ProductoDto>> filtro(@RequestBody BusquedaDto busquedaDto) {
         ProductoCriteria productoCriteria = createCriteria(busquedaDto);
         List<Producto> list = productoService.findByCriteria(productoCriteria);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+
+        List<ProductoDto> listaDto = list.stream().map(producto -> {
+            ProductoDto productoDto = new ProductoDto();
+
+            productoDto.setId(producto.getId());
+            productoDto.setArt(producto.getArt());
+            productoDto.setNombre(producto.getNombre());
+            productoDto.setPrecio(producto.getPrecio());
+            productoDto.setEsTela(producto.isEsTela());
+            productoDto.setMarca(producto.getMarca().getMarca());
+
+            return  productoDto;
+
+        }).collect(Collectors.toList());
+
+        return new ResponseEntity<>(listaDto, HttpStatus.OK);
     }
 
     @PostMapping("/nuevo")
@@ -110,22 +125,22 @@ public class ProductoController {
 
     @PostMapping("/varios")
     @Transactional
-    public ResponseEntity<?> saveVarios(@RequestBody List<Producto> lista) {
+    public ResponseEntity<?> saveVarios(@RequestBody List<ProductoDto> lista) {
 
         List<Producto> productos = new ArrayList<>();
 
-        for (Producto dto : lista) {
+        for (ProductoDto dto : lista) {
             Producto producto = new Producto();
 
             // Verificar si dto.getMarca() es null
-            if (dto.getMarca() == null || dto.getMarca().getMarca() == null) {
+            if (dto.getMarca() == null) {
                 return new ResponseEntity<>("FALTA MARCA en uno de los productos", HttpStatus.BAD_REQUEST);
             }
 
             // Verificar si la marca existe en la base de datos
-            Marca marca = marcaService.findByMarca(dto.getMarca().getMarca());
+            Marca marca = marcaService.findByMarca(dto.getMarca());
             if (marca == null) {
-                return new ResponseEntity<>("MARCA no ingesada: " + dto.getMarca().getMarca(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("MARCA no ingesada: " + dto.getMarca(), HttpStatus.BAD_REQUEST);
             }
 
             producto.setArt(dto.getArt());

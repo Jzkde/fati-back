@@ -1,6 +1,8 @@
 package com.fatidecoraciones.FatiDeco.services;
 
+import com.fatidecoraciones.FatiDeco.dtos.MarcaDto;
 import com.fatidecoraciones.FatiDeco.dtos.SistemaDto;
+import com.fatidecoraciones.FatiDeco.models.Marca;
 import com.fatidecoraciones.FatiDeco.models.Sistema;
 import com.fatidecoraciones.FatiDeco.repositories.SistemaRepository;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,15 @@ public class SistemaService {
         return sistemaRepository.findBySistemaIgnoreCase(sistema);
     }
 
+    public SistemaDto findBySistemaDto(String sistemaN) {
+        Sistema sistema = sistemaRepository.findBySistemaIgnoreCase(sistemaN);
+        if (sistema != null) {
+            return new SistemaDto(sistema);
+        } else {
+            return null;
+        }
+    }
+
     public boolean existById(Long id) {
         return sistemaRepository.existsById(id);
     }
@@ -38,15 +49,19 @@ public class SistemaService {
     }
 
     public List<SistemaDto> getSistemasDto() {
-        return sistemaRepository.findAll().stream().map(SistemaDto::new).collect(Collectors.toList());
+        return sistemaRepository.findAllByOrderBySistemaAsc().stream().map(SistemaDto::new).collect(Collectors.toList());
     }
 
     public Sistema save(Sistema sistema) {
         return sistemaRepository.save(sistema);
     }
 
-    public Sistema saveVarios(Sistema sistema) {
-        return sistemaRepository.save(sistema);
+    public void saveAll(List<Sistema> sistemas) {
+        List<Sistema> sistemasUnicos = sistemas.stream()
+                .filter(sistema -> !sistemaRepository.existsBySistema(sistema.getSistema().trim()))
+                .collect(Collectors.toList());
+
+        sistemaRepository.saveAll(sistemasUnicos);
     }
 
     public void delete(Long id) {
@@ -61,6 +76,19 @@ public class SistemaService {
         Sistema sistema = sistemaRepository.findById(clienteId).orElse(null);
         return
                 sistema != null && sistema.getMedidas() != null && !sistema.getMedidas().isEmpty() ||
-                        sistema != null && sistema.getCortEspeciales() != null && !sistema.getCortEspeciales().isEmpty();
+                        sistema != null && sistema.getCortEspecialess() != null && !sistema.getCortEspecialess().isEmpty();
     }
+
+    public List<SistemaDto> getSistemasPorMarca(String marca) {
+        return sistemaRepository
+                .findByMarcas_MarcaIgnoreCaseAndEsSistemaTrue(marca)
+                .stream()
+                .map(SistemaDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<SistemaDto> sistemasPorTipo(boolean esSistema) {
+        return sistemaRepository.findByEsSistema(esSistema).stream().map(SistemaDto::new).collect(Collectors.toList());
+    }
+
 }

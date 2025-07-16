@@ -4,10 +4,7 @@ import com.fatidecoraciones.FatiDeco.criteria.MedidaCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.MedidaDto;
 import com.fatidecoraciones.FatiDeco.models.Medida;
 import com.fatidecoraciones.FatiDeco.models.Medida_;
-
-import com.fatidecoraciones.FatiDeco.models.Sistema;
 import com.fatidecoraciones.FatiDeco.repositories.MedidaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;

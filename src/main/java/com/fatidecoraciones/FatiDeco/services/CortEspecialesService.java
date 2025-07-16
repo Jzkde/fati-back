@@ -2,9 +2,7 @@ package com.fatidecoraciones.FatiDeco.services;
 
 import com.fatidecoraciones.FatiDeco.criteria.CortEspecialesCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.CortEspecialesDto;
-import com.fatidecoraciones.FatiDeco.models.CortEspeciales;
-import com.fatidecoraciones.FatiDeco.models.CortEspeciales_;
-import com.fatidecoraciones.FatiDeco.models.Marca_;
+import com.fatidecoraciones.FatiDeco.models.*;
 import com.fatidecoraciones.FatiDeco.repositories.CortEspecialesRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,7 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         this.cortEspecialesRepository = cortEspecialesRepository;
     }
 
-    public List<CortEspecialesDto> findByMarca(String marca) {
+    public List<CortEspecialesDto> listaXMarca(String marca) {
         return cortEspecialesRepository.findByMarca_MarcaIgnoreCase(marca)
                 .stream()
                 .map(CortEspecialesDto::new)
@@ -40,12 +38,15 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         return cortEspecialesRepository.existsById(id);
     }
 
-    public CortEspeciales getCortEspeciales(Long id) {
+    public CortEspeciales getCortEspecial(Long id) {
         return cortEspecialesRepository.findById(id).orElse(null);
     }
+    public CortEspeciales getCortEspecialNombre(String nombre){
+        return cortEspecialesRepository.findByTelaIgnoreCase(nombre);
+    }
 
-    public CortEspecialesDto getCortEspecialesDto(Long id) {
-        return new CortEspecialesDto(this.getCortEspeciales(id));
+    public CortEspecialesDto unoDto(Long id) {
+        return new CortEspecialesDto(this.getCortEspecial(id));
     }
 
     // Por Lista
@@ -53,7 +54,7 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         return cortEspecialesRepository.findAll();
     }
 
-    public List<CortEspecialesDto> getCortEspecialessDto() {
+    public List<CortEspecialesDto> getListaTotalDto() {
         return cortEspecialesRepository.findAll().stream().map(CortEspecialesDto::new).collect(Collectors.toList());
     }
 
@@ -67,10 +68,6 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
                 .collect(Collectors.toList());
 
         cortEspecialesRepository.saveAll(productosFiltrados);
-    }
-
-    public CortEspeciales saveVarios(CortEspeciales cortEspeciales) {
-        return cortEspecialesRepository.save(cortEspeciales);
     }
 
     public void delete(Long id) {
@@ -90,16 +87,16 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         return cortEspecialesRepository.findByEsTelaAndSistema_SistemaIgnoreCase(false, sistema);
     }
 
-    public CortEspeciales findByTelaAndSistemaAndMarca(String sistema, String tela, String marca) {
-        return cortEspecialesRepository.findByTelaAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(tela, sistema, marca).orElse(null);
+    public boolean findByTelaAndSistemaAndMarca(String tela, String sistema, String marca) {
+        return cortEspecialesRepository.existsByTelaIgnoreCaseAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(tela, sistema, marca);
     }
 
     public CortEspeciales findByTelaAndSistema(String sistema, String tela) {
         return cortEspecialesRepository.findByTelaAndSistema_SistemaIgnoreCase(tela, sistema).orElse(null);
     }
 
-    public List<CortEspecialesDto> getSistemas(String sistema, String marca) {
-        List<CortEspeciales> cortEspecialesList = cortEspecialesRepository.findByMarca_MarcaIgnoreCase(marca);
+    public List<CortEspecialesDto> getMecanismoXMarcaXSistema(String sistema, String marca, boolean adicional) {
+        List<CortEspeciales> cortEspecialesList = cortEspecialesRepository.findByEsAdicionalAndMarca_MarcaIgnoreCaseAndSistema_Sistema(adicional, marca, sistema);
         return cortEspecialesList.stream()
                 .filter(cortEspeciales -> !cortEspeciales.isEsTela() && cortEspeciales.getSistema().getSistema().equalsIgnoreCase(sistema))
                 .sorted(Comparator.comparing(CortEspeciales::getTela))
@@ -107,8 +104,8 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
                 .collect(Collectors.toList());
     }
 
-    public List<CortEspecialesDto> getTelas(String sistema, String marca) {
-        List<CortEspeciales> cortEspecialesList = cortEspecialesRepository.findByMarca_MarcaIgnoreCase(marca);
+    public List<CortEspecialesDto> getTelasXMarcaXSistema(boolean adicional, String marca,String sistema) {
+        List<CortEspeciales> cortEspecialesList = cortEspecialesRepository.findByEsAdicionalAndMarca_MarcaIgnoreCaseAndSistema_Sistema(adicional, marca, sistema);
         return cortEspecialesList.stream()
                 .filter(cortEspeciales -> cortEspeciales.isEsTela() && cortEspeciales.getSistema().getSistema().equalsIgnoreCase(sistema))
                 .sorted(Comparator.comparing(CortEspeciales::getTela))
@@ -126,6 +123,9 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
         if (cortEspecialesCriteria != null) {
             if (cortEspecialesCriteria.getTela() != null) {
                 specification = specification.and(buildStringSpecification(cortEspecialesCriteria.getTela(), CortEspeciales_.tela));
+            }
+            if (cortEspecialesCriteria.getSistema() != null) {
+                specification = specification.and(buildReferringEntitySpecification(cortEspecialesCriteria.getSistema(), CortEspeciales_.sistema, Sistema_.sistema));
             }
             if (cortEspecialesCriteria.getMarca() != null) {
                 specification = specification.and(buildReferringEntitySpecification(cortEspecialesCriteria.getMarca(), CortEspeciales_.marca, Marca_.marca));

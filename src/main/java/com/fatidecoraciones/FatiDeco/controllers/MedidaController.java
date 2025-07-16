@@ -123,7 +123,7 @@ public class MedidaController {
         }
 
         Sistema sistema = sistemaService.findBySistema(nuevo.getSistema());
-        System.out.println(sistema.getSistema());
+
         if (clienteService.existByNombre(nuevo.getCliente().trim())) {
             cliente = clienteService.findByNombre(nuevo.getCliente().trim());
         } else {
@@ -140,13 +140,13 @@ public class MedidaController {
                 return new ResponseEntity<>("Este SISTEMA requiere COMANDO y NO debe tener APERTURA", HttpStatus.BAD_REQUEST);
             }
 
-        } else if (nuevo.getSistema().equalsIgnoreCase("VERTICALES") ){
+        } else if (nuevo.getSistema().equalsIgnoreCase("VERTICALES")) {
 
             if (nuevo.getComando().equalsIgnoreCase("NO_POSEE") || nuevo.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("VERTICALES requiere COMANDO y APERTURA", HttpStatus.BAD_REQUEST);
             }
 
-        } else if (nuevo.getSistema().equalsIgnoreCase("TELA") ) {
+        } else if (nuevo.getSistema().equalsIgnoreCase("TELA")) {
 
             if (!nuevo.getComando().equalsIgnoreCase("NO_POSEE") || nuevo.getApertura().equalsIgnoreCase("NO_POSEE")) {
                 return new ResponseEntity<>("TELA no debe tener COMANDO y debe tener APERTURA", HttpStatus.BAD_REQUEST);
@@ -488,7 +488,7 @@ public class MedidaController {
                 }
                 medidaCriteria.setViejo(filter);
             }
-            //Llego
+            //Comprado
             if (!StringUtils.isBlank(busqueda.getComprado())) {
                 BooleanFilter filter = new BooleanFilter();
                 if (busqueda.getComprado().equals("true")) {

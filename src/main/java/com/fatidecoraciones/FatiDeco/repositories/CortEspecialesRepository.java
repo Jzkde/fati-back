@@ -20,15 +20,18 @@ public interface CortEspecialesRepository extends JpaRepository<CortEspeciales, 
 
     List<CortEspeciales> findBySistema_SistemaIgnoreCase(String sistema);
 
-    List<CortEspeciales> findByMarca_MarcaIgnoreCase(String marca);
+    List<CortEspeciales> findByEsAdicionalAndMarca_MarcaIgnoreCaseAndSistema_Sistema(boolean adicional, String marca, String sistema);
+    List<CortEspeciales> findByMarca_MarcaIgnoreCase (String marca);
 
     boolean existsByMarca_MarcaIgnoreCase(String marca);
 
     boolean existsByTelaIgnoreCase(String tela);
+    boolean existsByTelaIgnoreCaseAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(String tela, String sistema, String marca);
 
     Optional<CortEspeciales> findByEsTelaAndSistema_SistemaIgnoreCase(boolean es_tela, String sistema );
 
     Optional<CortEspeciales> findByTelaAndSistema_SistemaIgnoreCaseAndMarca_MarcaIgnoreCase(String tela, String sistema, String marca);
+
     Optional<CortEspeciales> findByTelaAndSistema_SistemaIgnoreCase(String tela, String sistema);
 
     @Modifying

@@ -1,17 +1,20 @@
 package com.fatidecoraciones.FatiDeco.services;
 
+import com.fatidecoraciones.FatiDeco.criteria.ClienteCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.ClienteDto;
-import com.fatidecoraciones.FatiDeco.dtos.MarcaDto;
 import com.fatidecoraciones.FatiDeco.models.Cliente;
-import com.fatidecoraciones.FatiDeco.models.Marca;
+import com.fatidecoraciones.FatiDeco.models.Cliente_;
 import com.fatidecoraciones.FatiDeco.repositories.ClienteRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import tech.jhipster.service.QueryService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ClienteService {
+public class ClienteService extends QueryService<Cliente> {
 
     private final ClienteRepository clienteRepository;
 
@@ -64,11 +67,26 @@ public class ClienteService {
         Cliente cliente = clienteRepository.findById(clienteId).orElse(null);
         return cliente != null && cliente.getMedidas() != null && !cliente.getMedidas().isEmpty();
     }
+
     public boolean tieneConfecciones(Long clienteId) {
         Cliente cliente = clienteRepository.findById(clienteId).orElse(null);
         return cliente != null && cliente.getTalleres() != null && !cliente.getTalleres().isEmpty();
     }
 
+    public List<Cliente> findByCriteria(ClienteCriteria clienteCriteria) {
+        final Specification<Cliente> specification = createSpecification(clienteCriteria);
+        return clienteRepository.findAll(specification, Sort.by("nombre","telefono"));
+    }
+
+    private Specification<Cliente> createSpecification(ClienteCriteria clienteCriteria) {
+        Specification<Cliente> specification = Specification.where(null);
+        if (clienteCriteria != null) {
+            if (clienteCriteria.getNombre() != null) {
+                specification = specification.and(buildStringSpecification(clienteCriteria.getNombre(), Cliente_.nombre));
+            }
+        }
+        return specification;
+    }
 
 
 }

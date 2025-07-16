@@ -74,12 +74,19 @@ public class DBService {
             int filaIndex = 1;
             for (String[] fila : datos) {
 
+
                 // Columnas: nombre, precio, esTela, Sistema, marca
                 if (fila.length >= 5) {
                     CortEspeciales cortEspeciales = new CortEspeciales();
 
                     // Carga Nombre
-                    cortEspeciales.setTela(fila[0]);
+                    String nombreTela = fila[0].trim();
+                    if (cortEspecialesService.findByTela(nombreTela) != null) {
+                        resultado.getErrores().add("Fila " + filaIndex + ": Ya existe una tela con ese nombre: " + fila[0]);
+                        filaIndex++;
+                        continue;
+                    }
+                    cortEspeciales.setTela(nombreTela);
 
                     // Carga Precio
                     try {
@@ -92,6 +99,11 @@ public class DBService {
 
                     // Carga si en "tela" o no
                     cortEspeciales.setEsTela(Boolean.parseBoolean(fila[2]));
+                    if (!cortEspeciales.isEsTela()) {
+                        resultado.getErrores().add("Fila " + filaIndex + ": Solo se pueden cargar TELAS");
+                        filaIndex++;
+                        continue;
+                    }
 
                     // Carga Sistema
                     String nombreSistema = fila[3].trim();
@@ -107,6 +119,13 @@ public class DBService {
                     Marca marca = marcaService.findByMarca(nombreMarca);
                     if (marca == null) {
                         resultado.getErrores().add("Fila " + filaIndex + ": Marca no encontrada: " + nombreMarca);
+                        filaIndex++;
+                        continue;
+                    }
+
+                    // Validar relación Marca-Sistema
+                    if (!marca.getSistemas().contains(sistema)) {
+                        resultado.getErrores().add("Fila " + filaIndex + ": La marca '" + nombreMarca + "' no está relacionada con el sistema '" + nombreSistema + "'");
                         filaIndex++;
                         continue;
                     }

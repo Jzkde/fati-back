@@ -35,8 +35,12 @@ public class MarcaService {
     }
 
     public List<MarcaDto> getMarcasDto() {
-        return marcaRepository.findAll().stream().map(MarcaDto::new).collect(Collectors.toList());
+        return marcaRepository.findAllByOrderByEsSistemaAscMarcaAsc().stream().map(MarcaDto::new).collect(Collectors.toList());
     }
+    public List<MarcaDto> getMarcasDtoSistemas(boolean esSistema) {
+        return marcaRepository.findByEsSistema(esSistema).stream().map(MarcaDto::new).collect(Collectors.toList());
+    }
+
 
     public Marca save(Marca marca) {
         return marcaRepository.save(marca);
@@ -53,10 +57,10 @@ public class MarcaService {
     public Marca findByMarca(String marca) {
         return marcaRepository.findByMarcaIgnoreCase(marca);
     }
-    public MarcaDto findByMarcaDto(String marca) {
-        Marca marcaEntidad = marcaRepository.findByMarcaIgnoreCase(marca);
-        if (marcaEntidad != null) {
-            return new MarcaDto(marcaEntidad);
+    public MarcaDto findByMarcaDto(String marcaN) {
+        Marca marca = marcaRepository.findByMarcaIgnoreCase(marcaN);
+        if (marca != null) {
+            return new MarcaDto(marca);
         } else {
             return null;
         }

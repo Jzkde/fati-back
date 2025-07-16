@@ -1,6 +1,7 @@
 package com.fatidecoraciones.FatiDeco.models;
 
 import javax.annotation.Generated;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -14,6 +15,8 @@ public abstract class CortEspeciales_ {
 	public static volatile SingularAttribute<CortEspeciales, Double> precio;
 	public static volatile SingularAttribute<CortEspeciales, Sistema> sistema;
 	public static volatile SingularAttribute<CortEspeciales, Long> id;
+	public static volatile SetAttribute<CortEspeciales, Rango> rangos;
+	public static volatile SingularAttribute<CortEspeciales, Boolean> esAdicional;
 
 	public static final String TELA = "tela";
 	public static final String ES_TELA = "esTela";
@@ -21,6 +24,8 @@ public abstract class CortEspeciales_ {
 	public static final String PRECIO = "precio";
 	public static final String SISTEMA = "sistema";
 	public static final String ID = "id";
+	public static final String RANGOS = "rangos";
+	public static final String ES_ADICIONAL = "esAdicional";
 
 }
 

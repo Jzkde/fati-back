@@ -72,7 +72,11 @@ public class ServicioController {
         Marca fati  = marcaService.findByMarca("fati");
 
         if (fati == null) {
-            fati = new Marca("FATI");
+            fati = new Marca(
+                    "FATI",
+                    "Fati Decoraciones",
+                    false);
+
             marcaService.save(fati);
         }
 

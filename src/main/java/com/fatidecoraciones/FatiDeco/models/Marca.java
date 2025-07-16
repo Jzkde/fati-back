@@ -16,6 +16,8 @@ public class Marca {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String marca;
+    private String nombre;
+    private boolean esSistema;
 
     @OneToMany(mappedBy = "marca", fetch = FetchType.EAGER)
     private Set<Producto> productos = new HashSet<>();
@@ -26,11 +28,17 @@ public class Marca {
     @OneToMany(mappedBy = "marca", fetch = FetchType.EAGER)
     private Set<Servicio> servicios = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "marca_sistema", joinColumns = @JoinColumn(name = "marca_id"), inverseJoinColumns = @JoinColumn(name = "sistema_id"))
+    private Set<Sistema> sistemas = new HashSet<>();
+
     public Marca() {
     }
 
-    public Marca(String marca) {
+    public Marca(String marca, String nombre, boolean esSistema) {
         this.marca = marca;
+        this.nombre = nombre;
+        this.esSistema = esSistema;
     }
 
     public void addMarcaProd(Producto producto) {
@@ -46,5 +54,15 @@ public class Marca {
     public void addMarcaServ(Servicio servicio) {
         servicio.setMarca(this);
         this.servicios.add(servicio);
+    }
+
+    public void addSistema(Sistema sistema) {
+        sistema.getMarcas().add(this);
+        this.sistemas.add(sistema);
+    }
+
+    public void removeSistema(Sistema sistema) {
+        sistema.getMarcas().remove(this);
+        this.sistemas.remove(sistema);
     }
 }
