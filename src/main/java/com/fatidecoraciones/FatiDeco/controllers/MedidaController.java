@@ -223,14 +223,15 @@ public class MedidaController {
         return new ResponseEntity<>("Medidas cargardas: " + medida.getId(), HttpStatus.OK);
     }
 
+    @Transactional
     @PostMapping("/pdf")
     public ResponseEntity<?> generarPdfJasper(@RequestBody List<MedidaDto> medidas,
                                               @RequestParam String tel,
                                               @RequestParam String direcc) {
 
-        Cliente cliente1 = clienteService.findByNombre(medidas.get(0).getCliente());
+        Cliente cliente = clienteService.findByNombre(medidas.get(0).getCliente());
 
-        if (cliente1 == null) {
+        if (cliente == null) {
             Cliente clienteN = new Cliente(
                     medidas.get(0).getCliente(),
                     direcc,
@@ -238,10 +239,10 @@ public class MedidaController {
             );
             clienteService.save(clienteN);
         } else {
-            cliente1.setDireccion(direcc);
-            cliente1.setTelefono(tel);
+            cliente.setDireccion(direcc);
+            cliente.setTelefono(tel);
 
-            clienteService.save(cliente1);
+            clienteService.save(cliente);
         }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

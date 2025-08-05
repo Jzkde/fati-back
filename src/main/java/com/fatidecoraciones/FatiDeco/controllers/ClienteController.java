@@ -36,7 +36,18 @@ public class ClienteController {
     }
 
     @Transactional
-    @PostMapping("/buscar")
+    @GetMapping("/buscar")
+    public ResponseEntity<ClienteDto> buscar(@RequestParam String clienteN) {
+
+        ClienteDto cliente = clienteService.findByNombreDto(clienteN);
+
+
+
+        return new ResponseEntity<>(cliente, HttpStatus.OK);
+    }
+
+    @Transactional
+    @PostMapping("/filtro")
     public ResponseEntity<List<ClienteDto>> filtro(@RequestBody BusquedaDto busquedaDto) {
 
         ClienteCriteria clienteCriteria = createCriteria(busquedaDto);
