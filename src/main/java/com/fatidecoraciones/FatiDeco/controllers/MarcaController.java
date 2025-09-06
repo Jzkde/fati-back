@@ -50,7 +50,7 @@ public class MarcaController {
     public ResponseEntity<MarcaDto> uno(@PathVariable Long id) {
 
 
-        if (!marcaService.existById(id)) {
+        if (!marcaService.existsById(id)) {
             return new ResponseEntity("El PROVEEDOR no existe o fue BORRADO", HttpStatus.NOT_FOUND);
         }
         MarcaDto uno = marcaService.getMarcaDto(id);
@@ -81,7 +81,7 @@ public class MarcaController {
     public ResponseEntity<?> editar(@PathVariable Long id,
                                     @RequestBody MarcaDto editar) {
 
-        if (!marcaService.existById(id)) {
+        if (!marcaService.existsById(id)) {
             return new ResponseEntity<>("No existe el PROVEEDOR", HttpStatus.NOT_FOUND);
         }
         if (marcaService.findByMarca(editar.getMarca().trim()) != null) {
@@ -100,7 +100,7 @@ public class MarcaController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!marcaService.existById(id)) {
+        if (!marcaService.existsById(id)) {
             return new ResponseEntity<>("El PROVEEDOR no existe", HttpStatus.NOT_FOUND);
         }
 

@@ -1,6 +1,6 @@
 package com.fatidecoraciones.FatiDeco.models;
 
-import com.fatidecoraciones.FatiDeco.enums.Estado;
+import com.fatidecoraciones.FatiDeco.dB.enums.Estado;
 import java.time.LocalDate;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;

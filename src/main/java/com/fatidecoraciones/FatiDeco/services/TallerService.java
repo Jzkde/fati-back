@@ -5,7 +5,6 @@ import com.fatidecoraciones.FatiDeco.dtos.TallerDto;
 import com.fatidecoraciones.FatiDeco.models.Taller;
 import com.fatidecoraciones.FatiDeco.models.Taller_;
 import com.fatidecoraciones.FatiDeco.repositories.TallerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tech.jhipster.service.QueryService;
@@ -22,7 +21,7 @@ public class TallerService extends QueryService<Taller> {
         this.tallerRepository = tallerRepository;
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return tallerRepository.existsById(id);
     }
 

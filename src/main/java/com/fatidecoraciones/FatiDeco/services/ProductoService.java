@@ -22,7 +22,7 @@ public class ProductoService extends QueryService<Producto> {
         this.productoRepository = productoRepository;
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return productoRepository.existsById(id);
     }
 

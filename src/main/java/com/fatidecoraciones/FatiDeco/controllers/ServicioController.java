@@ -1,13 +1,12 @@
 package com.fatidecoraciones.FatiDeco.controllers;
 
 import com.fatidecoraciones.FatiDeco.dtos.ServicioDto;
-import com.fatidecoraciones.FatiDeco.enums.Serv;
+import com.fatidecoraciones.FatiDeco.dB.enums.Serv;
 import com.fatidecoraciones.FatiDeco.models.Marca;
 import com.fatidecoraciones.FatiDeco.models.Servicio;
 import com.fatidecoraciones.FatiDeco.services.MarcaService;
 import com.fatidecoraciones.FatiDeco.services.ServicioService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +49,7 @@ public class ServicioController {
 
     @GetMapping("/uno/{id}")
     public ResponseEntity<ServicioDto> uno(@PathVariable Long id) {
-        if (!servicioService.existById(id)) {
+        if (!servicioService.existsById(id)) {
             return new ResponseEntity("La COLOCACION no existe o fue BORRADA", HttpStatus.NOT_FOUND);
         }
 
@@ -96,7 +95,7 @@ public class ServicioController {
     public ResponseEntity<?> editar(@PathVariable Long id,
                                     @RequestBody ServicioDto editar) {
 
-        if (!servicioService.existById(id)) {
+        if (!servicioService.existsById(id)) {
             return new ResponseEntity<>("No existe la COLOCACION", HttpStatus.NOT_FOUND);
         }
         if (editar.getPrecio() < 0) {
@@ -133,7 +132,7 @@ public class ServicioController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!servicioService.existById(id)) {
+        if (!servicioService.existsById(id)) {
             return new ResponseEntity<>("La COLOCACION no existe", HttpStatus.NOT_FOUND);
         }
         servicioService.delete(id);

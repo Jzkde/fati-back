@@ -65,7 +65,7 @@ public class RangoController {
     public ResponseEntity<?> nuevo(@RequestBody RangoDto nuevo,
                                    @PathVariable Long id) {
 
-        if (!cortEspecialesService.existById(id)) {
+        if (!cortEspecialesService.existsById(id)) {
             return new ResponseEntity<>("El SISTEMA no existe", HttpStatus.NOT_FOUND);
         }
 
@@ -99,7 +99,7 @@ public class RangoController {
 
 //        CortEspeciales cortEspeciales = cortEspecialesService.getCortEspecialNombre(editar.getSistema());
 
-        if (!cortEspecialesService.existById(id)) {
+        if (!cortEspecialesService.existsById(id)) {
             return new ResponseEntity<>("No existe la TELA/SISTEMA", HttpStatus.BAD_REQUEST);
         }
 
@@ -120,7 +120,7 @@ public class RangoController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!rangoService.existById(id))
+        if (!rangoService.existsById(id))
             return new ResponseEntity<>("El RANGO de medidas no existe", HttpStatus.NOT_FOUND);
         rangoService.delete(id);
         return new ResponseEntity<>("RANGO borrado", HttpStatus.OK);

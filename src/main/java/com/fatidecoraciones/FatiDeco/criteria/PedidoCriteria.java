@@ -1,6 +1,6 @@
 package com.fatidecoraciones.FatiDeco.criteria;
 
-import com.fatidecoraciones.FatiDeco.enums.Estado;
+import com.fatidecoraciones.FatiDeco.dB.enums.Estado;
 import lombok.Data;
 import tech.jhipster.service.filter.*;
 

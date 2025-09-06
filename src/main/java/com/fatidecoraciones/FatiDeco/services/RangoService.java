@@ -61,7 +61,7 @@ public class RangoService {
         return rangoRepository.findById(id).orElse(null);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return rangoRepository.existsById(id);
     }
 

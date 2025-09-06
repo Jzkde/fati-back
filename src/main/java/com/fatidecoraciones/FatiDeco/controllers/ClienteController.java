@@ -73,7 +73,7 @@ public class ClienteController {
     public ResponseEntity<ClienteDto> uno(@PathVariable Long id) {
 
 
-        if (!clienteService.existById(id)) {
+        if (!clienteService.existsById(id)) {
             return new ResponseEntity("El CLIENTE no existe", HttpStatus.NOT_FOUND);
         }
         ClienteDto uno = clienteService.getClienteDto(id);
@@ -110,7 +110,7 @@ public class ClienteController {
             return new ResponseEntity<>("El CLIENTE ya Existe", HttpStatus.NOT_FOUND);
         }
 
-        if (!clienteService.existById(id)) {
+        if (!clienteService.existsById(id)) {
             return new ResponseEntity<>("No existe el CLIENTE", HttpStatus.NOT_FOUND);
         }
         if (StringUtils.isBlank(editar.getNombre())) {
@@ -130,7 +130,7 @@ public class ClienteController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!clienteService.existById(id)) {
+        if (!clienteService.existsById(id)) {
             return new ResponseEntity<>("El CLIENTE no existe", HttpStatus.NOT_FOUND);
         }
 

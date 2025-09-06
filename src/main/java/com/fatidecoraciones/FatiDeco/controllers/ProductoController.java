@@ -162,7 +162,7 @@ public class ProductoController {
                                     @RequestParam String marca,
                                     @RequestBody ProductoDto editar) {
 
-        if (!productoService.existById(id)) {
+        if (!productoService.existsById(id)) {
             return new ResponseEntity<>("El PRODUCTO no existe", HttpStatus.BAD_REQUEST);
         }
         if (editar.getArt() == null || editar.getArt().isBlank()) {
@@ -211,7 +211,7 @@ public class ProductoController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!productoService.existById(id))
+        if (!productoService.existsById(id))
             return new ResponseEntity<>("La TELA no existe", HttpStatus.NOT_FOUND);
         productoService.delete(id);
         return new ResponseEntity<>("TELA borrada", HttpStatus.OK);

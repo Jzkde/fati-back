@@ -1,4 +1,4 @@
-package com.fatidecoraciones.FatiDeco.enums;
+package com.fatidecoraciones.FatiDeco.dB.enums;
 
 public enum Serv {
     COLOCACION,

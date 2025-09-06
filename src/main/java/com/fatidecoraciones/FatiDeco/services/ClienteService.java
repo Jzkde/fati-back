@@ -39,7 +39,7 @@ public class ClienteService extends QueryService<Cliente> {
         return clienteRepository.existsByNombreIgnoreCase(nombre);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return clienteRepository.existsById(id);
     }
 

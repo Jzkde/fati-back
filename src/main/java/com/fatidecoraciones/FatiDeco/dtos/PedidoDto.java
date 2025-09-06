@@ -1,6 +1,6 @@
 package com.fatidecoraciones.FatiDeco.dtos;
 
-import com.fatidecoraciones.FatiDeco.enums.Estado;
+import com.fatidecoraciones.FatiDeco.dB.enums.Estado;
 import com.fatidecoraciones.FatiDeco.models.Pedido;
 import lombok.Getter;
 import lombok.Setter;

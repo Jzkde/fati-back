@@ -23,7 +23,7 @@ public class MedidaService extends QueryService<Medida> {
         this.medidaRepository = medidaRepository;
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return medidaRepository.existsById(id);
     }
 

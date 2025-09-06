@@ -3,8 +3,8 @@ package com.fatidecoraciones.FatiDeco.controllers;
 import com.fatidecoraciones.FatiDeco.criteria.TallerCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.BusquedaDto;
 import com.fatidecoraciones.FatiDeco.dtos.TallerDto;
-import com.fatidecoraciones.FatiDeco.enums.Apertura;
-import com.fatidecoraciones.FatiDeco.enums.Estado;
+import com.fatidecoraciones.FatiDeco.dB.enums.Apertura;
+import com.fatidecoraciones.FatiDeco.dB.enums.Estado;
 import com.fatidecoraciones.FatiDeco.models.Cliente;
 import com.fatidecoraciones.FatiDeco.models.Taller;
 import com.fatidecoraciones.FatiDeco.services.ClienteService;
@@ -19,6 +19,7 @@ import tech.jhipster.service.filter.StringFilter;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,38 +108,61 @@ public class TallerController {
 
     @PostMapping("/mover")
     @Transactional
-    public ResponseEntity<String> mover(@RequestBody TallerDto mover) {
+    public ResponseEntity<String> mover(@RequestBody List<TallerDto> listaMover) {
 
-        Cliente cliente;
+        List<Taller> listaTalleres = new ArrayList<>();
 
-        if (clienteService.existByNombre(mover.getCliente())) {
-            cliente = clienteService.findByNombre(mover.getCliente());
-        } else {
-            cliente = new Cliente();
-            cliente.setNombre(mover.getCliente());
-            cliente = clienteService.save(cliente);
+        for (TallerDto mover : listaMover) {
+
+            if (StringUtils.isBlank(mover.getCliente())) {
+                return new ResponseEntity<>("Falta el NOMBRE del CLIENTE", HttpStatus.BAD_REQUEST);
+            }
+
+            if (mover.getAncho() <= 0) {
+                return new ResponseEntity<>("El ANCHO no puede ser 0 o negativo", HttpStatus.BAD_REQUEST);
+            }
+
+            if (mover.getAlto() <= 0) {
+                return new ResponseEntity<>("El ALTO no puede ser 0 o negativo", HttpStatus.BAD_REQUEST);
+            }
+
+            // Verificamos o creamos cliente
+            Cliente cliente;
+            if (clienteService.existByNombre(mover.getCliente())) {
+                cliente = clienteService.findByNombre(mover.getCliente());
+            } else {
+                cliente = new Cliente();
+                cliente.setNombre(mover.getCliente());
+                cliente = clienteService.save(cliente);
+            }
+
+            Taller taller = new Taller(
+                    mover.getAncho(),
+                    mover.getAlto(),
+                    mover.getApertura(),
+                    mover.getAccesorios(),
+                    mover.getAmbiente(),
+                    mover.getObservaciones(),
+                    mover.getCliente(),
+                    LocalDate.now(),
+                    Estado.PEDIDO,
+                    false
+            );
+
+            cliente.addTaller(taller);
+            listaTalleres.add(taller);
         }
 
-        if (mover.getAncho() <= 0) {
-            return new ResponseEntity<>("El ANCHO no puede ser 0 o nagativo", HttpStatus.BAD_REQUEST);
-        }
-        if (mover.getAlto() <= 0) {
-            return new ResponseEntity<>("El ALTO no puede ser 0 o nagativo", HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(mover.getCliente())) {
-            return new ResponseEntity<>("Falta el NOMBRE del CLIENTE", HttpStatus.BAD_REQUEST);
-        }
+        tallerService.saveAll(listaTalleres);
 
-        Taller taller = new Taller(mover.getAncho(), mover.getAlto(), mover.getApertura(), mover.getAccesorios(), mover.getAmbiente(), mover.getObservaciones(), mover.getCliente(), LocalDate.now(), Estado.PEDIDO, false);
-        cliente.addTaller(taller);
-        tallerService.save(taller);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @PutMapping("/actualizar/{id}")
     @Transactional
     public ResponseEntity<String> actualizar(@PathVariable Long id) {
-        if (!tallerService.existById(id)) {
+        if (!tallerService.existsById(id)) {
             return new ResponseEntity<>("No Existe", HttpStatus.NOT_FOUND);
         }
 
@@ -224,7 +248,7 @@ public class TallerController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!tallerService.existById(id)) {
+        if (!tallerService.existsById(id)) {
             return new ResponseEntity<>("La CONFECCION no existe", HttpStatus.NOT_FOUND);
         }
         tallerService.delete(id);

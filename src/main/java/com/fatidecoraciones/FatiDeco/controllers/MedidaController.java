@@ -3,8 +3,8 @@ package com.fatidecoraciones.FatiDeco.controllers;
 import com.fatidecoraciones.FatiDeco.criteria.MedidaCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.BusquedaDto;
 import com.fatidecoraciones.FatiDeco.dtos.MedidaDto;
-import com.fatidecoraciones.FatiDeco.enums.Apertura;
-import com.fatidecoraciones.FatiDeco.enums.Comando;
+import com.fatidecoraciones.FatiDeco.dB.enums.Apertura;
+import com.fatidecoraciones.FatiDeco.dB.enums.Comando;
 import com.fatidecoraciones.FatiDeco.models.Cliente;
 import com.fatidecoraciones.FatiDeco.models.Medida;
 import com.fatidecoraciones.FatiDeco.models.Sistema;
@@ -61,7 +61,7 @@ public class MedidaController {
     @GetMapping("/uno/{id}")
     public ResponseEntity<MedidaDto> uno(@PathVariable Long id) {
 
-        if (!medidaService.existById(id)) {
+        if (!medidaService.existsById(id)) {
             return new ResponseEntity("Las MEDIDAS no existen o fueron BORRADAS", HttpStatus.BAD_REQUEST);
         }
         MedidaDto uno = medidaService.getMedidaDto(id);
@@ -182,7 +182,7 @@ public class MedidaController {
                     nuevo.getAncho(),
                     nuevo.getAlto(),
                     Comando.valueOf(nuevo.getComando()),
-                    Apertura.valueOf(nuevo.getComando()),
+                    Apertura.valueOf(nuevo.getApertura()),
                     nuevo.getAccesorios(),
                     nuevo.getAmbiente(),
                     nuevo.getObservaciones(),
@@ -438,35 +438,32 @@ public class MedidaController {
     }
 
 
-    @GetMapping("/actualizar/{id}")
+    @PostMapping("/actualizar")
     @Transactional
-    public ResponseEntity<?> actualizar(@PathVariable Long id) {
-        if (!medidaService.existById(id)) {
-            return new ResponseEntity<>("No Existe", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> actualizar(@RequestBody List<MedidaDto> medidas) {
 
-        Medida medida = medidaService.getMedida(id);
-        if (medida == null) {
-            return new ResponseEntity<>("Medida no encontrado", HttpStatus.NOT_FOUND);
-        }
+        List<Medida> medidasN = new  ArrayList<>();
 
-        if (medida.isComprado()) {
-            medida.setComprado(false);
-        } else {
-            medida.setComprado(true);
-        }
+        for (MedidaDto medidaDto : medidas) {
 
-        medidaService.save(medida);
+            Medida medida = medidaService.getMedida(medidaDto.getId());
+
+            medida.setComprado(!medidaDto.isComprado());
+
+
+           medidasN.add(medida);
+        }
+        medidaService.saveAll(medidasN);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!medidaService.existById(id))
-            return new ResponseEntity<>("El PRESUPUESTO no existe", HttpStatus.NOT_FOUND);
+        if (!medidaService.existsById(id))
+            return new ResponseEntity<>("Las MEDIDAS no existen", HttpStatus.NOT_FOUND);
         medidaService.delete(id);
-        return new ResponseEntity<>("PRESUPUESTO borrado", HttpStatus.OK);
+        return new ResponseEntity<>("MEDIDAS borradas", HttpStatus.OK);
     }
 
     private MedidaCriteria createCriteria(BusquedaDto busqueda) {

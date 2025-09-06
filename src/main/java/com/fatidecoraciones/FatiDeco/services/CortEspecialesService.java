@@ -34,7 +34,7 @@ public class CortEspecialesService extends QueryService<CortEspeciales> {
     }
 
     // Por uno
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return cortEspecialesRepository.existsById(id);
     }
 

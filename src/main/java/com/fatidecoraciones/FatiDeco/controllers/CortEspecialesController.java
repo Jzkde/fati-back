@@ -66,7 +66,7 @@ public class CortEspecialesController {
     @GetMapping("/uno/{id}")
     public ResponseEntity<CortEspecialesDto> uno(@PathVariable Long id) {
 
-        if (!cortEspecialesService.existById(id)) {
+        if (!cortEspecialesService.existsById(id)) {
             return new ResponseEntity("La TELA no existe o fue BORRADA", HttpStatus.NOT_FOUND);
         }
 
@@ -244,7 +244,7 @@ public class CortEspecialesController {
         Marca marca = marcaService.findByMarca(editar.getMarca());
         Sistema sistema = sistemaService.findBySistema(editar.getSistema());
 
-        if (!cortEspecialesService.existById(id)) {
+        if (!cortEspecialesService.existsById(id)) {
             return new ResponseEntity<>("No existe la TELA/SISTEMA", HttpStatus.BAD_REQUEST);
         }
         if (marca == null) {
@@ -293,7 +293,7 @@ public class CortEspecialesController {
     @Transactional
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!cortEspecialesService.existById(id))
+        if (!cortEspecialesService.existsById(id))
             return new ResponseEntity<>("La TELA/SISTEMA no existe", HttpStatus.NOT_FOUND);
         cortEspecialesService.delete(id);
         return new ResponseEntity<>("TELA/SISTEMA borrada", HttpStatus.OK);

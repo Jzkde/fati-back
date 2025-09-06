@@ -60,7 +60,7 @@ public class SistemaController {
     @GetMapping("/uno/{id}")
     public ResponseEntity<SistemaDto> uno(@PathVariable Long id) {
 
-        if (!sistemaService.existById(id)) {
+        if (!sistemaService.existsById(id)) {
             return new ResponseEntity("El SISTEMA no existe o fue BORRADO", HttpStatus.NOT_FOUND);
         }
         SistemaDto uno = sistemaService.getSistemaDto(id);
@@ -107,7 +107,7 @@ public class SistemaController {
     public ResponseEntity<?> editar(@PathVariable Long id,
                                     @RequestBody SistemaDto editar) {
 
-        if (!sistemaService.existById(id)) {
+        if (!sistemaService.existsById(id)) {
             return new ResponseEntity<>("El SISTEMA no existe", HttpStatus.NOT_FOUND);
         }
         if (sistemaService.findBySistema(editar.getSistema().trim()) != null) {
@@ -145,7 +145,7 @@ public class SistemaController {
     @Transactional
     @DeleteMapping("/borrar/{id}")
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!sistemaService.existById(id)) {
+        if (!sistemaService.existsById(id)) {
             return new ResponseEntity<>("El SISTEMA no existe", HttpStatus.NOT_FOUND);
         }
 

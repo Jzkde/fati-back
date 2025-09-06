@@ -1,10 +1,9 @@
 package com.fatidecoraciones.FatiDeco.services;
 
 import com.fatidecoraciones.FatiDeco.dtos.ServicioDto;
-import com.fatidecoraciones.FatiDeco.enums.Serv;
+import com.fatidecoraciones.FatiDeco.dB.enums.Serv;
 import com.fatidecoraciones.FatiDeco.models.Servicio;
 import com.fatidecoraciones.FatiDeco.repositories.ServicioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class ServicioService {
         this.servicioRepository = servicioRepository;
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return servicioRepository.existsById(id);
     }
 

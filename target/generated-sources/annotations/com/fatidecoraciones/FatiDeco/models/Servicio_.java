@@ -1,6 +1,6 @@
 package com.fatidecoraciones.FatiDeco.models;
 
-import com.fatidecoraciones.FatiDeco.enums.Serv;
+import com.fatidecoraciones.FatiDeco.dB.enums.Serv;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;

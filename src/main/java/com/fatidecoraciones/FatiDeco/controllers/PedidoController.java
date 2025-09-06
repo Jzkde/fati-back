@@ -4,7 +4,7 @@ package com.fatidecoraciones.FatiDeco.controllers;
 import com.fatidecoraciones.FatiDeco.criteria.PedidoCriteria;
 import com.fatidecoraciones.FatiDeco.dtos.BusquedaDto;
 import com.fatidecoraciones.FatiDeco.dtos.PedidoDto;
-import com.fatidecoraciones.FatiDeco.enums.Estado;
+import com.fatidecoraciones.FatiDeco.dB.enums.Estado;
 import com.fatidecoraciones.FatiDeco.models.Pedido;
 import com.fatidecoraciones.FatiDeco.services.PedidoService;
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +99,7 @@ public class PedidoController {
     @Transactional
     public ResponseEntity<String> actualizar(@PathVariable Long id) {
 
-        if (!pedidoService.existById(id)) {
+        if (!pedidoService.existsById(id)) {
             return new ResponseEntity<>("El PEDIDO no Existe", HttpStatus.NOT_FOUND);
         }
         Pedido pedido = pedidoService.getPedido(id);
@@ -181,7 +181,7 @@ public class PedidoController {
     @DeleteMapping("/borrar/{id}")
     @Transactional
     public ResponseEntity<?> borrar(@PathVariable Long id) {
-        if (!pedidoService.existById(id)) {
+        if (!pedidoService.existsById(id)) {
             return new ResponseEntity<>("El PEDIDO no existe", HttpStatus.NOT_FOUND);
         }
         pedidoService.delete(id);

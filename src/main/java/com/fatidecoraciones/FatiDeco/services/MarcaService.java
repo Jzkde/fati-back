@@ -18,7 +18,7 @@ public class MarcaService {
         this.marcaRepository = marcaRepository;
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return marcaRepository.existsById(id);
     }
 

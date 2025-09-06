@@ -1,7 +1,5 @@
 package com.fatidecoraciones.FatiDeco.dtos;
 
-import com.fatidecoraciones.FatiDeco.enums.Apertura;
-import com.fatidecoraciones.FatiDeco.enums.Comando;
 import com.fatidecoraciones.FatiDeco.models.Medida;
 import lombok.Getter;
 import lombok.Setter;

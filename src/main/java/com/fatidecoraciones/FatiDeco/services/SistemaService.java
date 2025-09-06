@@ -32,7 +32,7 @@ public class SistemaService {
         }
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return sistemaRepository.existsById(id);
     }
 
